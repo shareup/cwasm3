@@ -77,50 +77,37 @@ final class CWasm3Tests: XCTestCase {
         let runtime = m3_NewRuntime(environment, 512, nil)
         defer { m3_FreeRuntime(runtime) }
 
-        var simpleImportBytes = try simpleImport()
-        defer { simpleImportBytes.removeAll() }
+        var importedAddBytes = try importedAddFunc()
+        defer { importedAddBytes.removeAll() }
 
         var module: IM3Module?
-        XCTAssertNil(m3_ParseModule(environment, &module, simpleImportBytes, UInt32(simpleImportBytes.count)))
+        XCTAssertNil(m3_ParseModule(environment, &module, importedAddBytes, UInt32(importedAddBytes.count)))
         XCTAssertNil(m3_LoadModule(runtime, module))
 
         // The imported function needs to linked before the exported function can be referenced.
         XCTAssertNil(m3_LinkRawFunction(
-            module, "imports", "imported_func", "i(I i)", simpleImport(runtime:stackPointer:memory:)
+            module, "imports", "imported_add_func", "i(I i)", importedAdd(runtime:stackPointer:memory:)
         ))
 
-        var exportedFunction: IM3Function?
-        XCTAssertNil(m3_FindFunction(&exportedFunction, runtime, "exported_func"))
+        var integerProviderFunction: IM3Function?
+        XCTAssertNil(m3_FindFunction(&integerProviderFunction, runtime, "integer_provider_func"))
 
-        let result = [].withCStrings { (arguments) -> Int32 in
+        let sum = [].withCStrings { (arguments) -> Int32 in
             var mutableArguments = arguments
+
             let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
-            let output = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
-            let result = wasm3_CallWithArgs(exportedFunction, UInt32(0), &mutableArguments, size, output)
-            XCTAssertNil(result)
+            defer { size.deallocate() }
+
+            let ret = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
+            defer { ret.deallocate() }
+
+            XCTAssertNil(wasm3_CallWithArgs(integerProviderFunction, UInt32(0), &mutableArguments, size, ret))
             XCTAssertEqual(MemoryLayout<Int32>.size, size.pointee)
-            return output.pointee
+            return ret.pointee
         }
 
-        XCTAssertEqual(1, result)
+        XCTAssertEqual(-3291, sum)
     }
-
-//    try vm.link(function: "imported_func", namespace: "imports", signature: "v(I I)", block: imported_func(runtime:stackPointer:memory:))
-
-//    public typealias ImportFunction = @convention(c) (IM3Runtime?, UnsafeMutablePointer<UInt64>?, UnsafeMutableRawPointer?) -> UnsafeRawPointer?
-//
-//        public func link(
-//            function name: String,
-//            namespace: String,
-//            signature: String,
-//            block: ImportFunction?
-//    //        typedef const void * (* M3RawCall) (IM3Runtime runtime, uint64_t * _sp, void * _mem);
-//        ) throws {
-//
-//            try check(m3_LinkRawFunction(_moduleCache.keys.first!, namespace, name, signature, block))
-//        }
-
-//I was thinking of some tests we could write for the wasm package to make sure memory access is working. We are only writing bytes of a certain length at a memory address. I think we could add a function to the wat that does that and then we write “hello” at an address and then we call a function with the address and have it read five bytes and if it’s “hello” then return 0 else 1. If you want to work on that (or something like it) later today let me know.
 
     static var allTests = [
         ("testCanCreateEnvironmentAndRuntime", testCanCreateEnvironmentAndRuntime),
@@ -130,33 +117,27 @@ final class CWasm3Tests: XCTestCase {
     ]
 }
 
-private func simpleImport(
+private func importedAdd(
     runtime: IM3Runtime?,
     stackPointer: UnsafeMutablePointer<UInt64>?,
     memory: UnsafeMutableRawPointer?
 ) -> UnsafeRawPointer? {
-    let size = MemoryLayout<CChar>.size
-    let alignment = MemoryLayout<CChar>.alignment
-
-    let pointer: UnsafeMutableRawPointer = UnsafeMutableRawPointer.allocate(byteCount: size, alignment: alignment)
-    defer { pointer.deallocate() }
-
-    pointer.storeBytes(of: CChar(exactly: 0)!, as: CChar.self) // Default to `false`
-
-    guard let stackPointer = stackPointer else { return UnsafeRawPointer(pointer) }
-
-    let firstArg = stackPointer.pointee
-    let secondArg: Int32 = stackPointer.withMemoryRebound(to: Int32.self, capacity: 4) { $0.advanced(by: 2).pointee }
-
-    if firstArg == Int64(42) && secondArg == Int32(-3333) {
-        pointer.storeBytes(of: CChar(exactly: 1)!, as: CChar.self) // `true`
-        return UnsafeRawPointer(pointer)
-    } else {
-        return UnsafeRawPointer(pointer)
+    guard let stackPointer = UnsafeMutableRawPointer(stackPointer) else {
+        return UnsafeRawPointer(m3Err_trapUnreachable)
     }
+
+    let first = stackPointer.load(as: Int64.self)
+    let second = stackPointer.load(fromByteOffset: MemoryLayout<Int64>.stride, as: Int32.self)
+    let sum = Int32(first + Int64(second))
+    stackPointer.storeBytes(of: sum, as: Int32.self)
+
+    return nil
 }
 
 extension CWasm3Tests {
+    // compile and copy base64 binaries in Bash via:
+    // `wat2wasm -o >(base64) path/to/file.wat | pbcopy`
+
     private enum TestError: Error {
         case couldNotDecodeWasm(String)
         case couldNotLoadResource(String)
@@ -174,9 +155,9 @@ extension CWasm3Tests {
         return Array<UInt8>(data)
     }
 
-    private func simpleImport() throws -> Array<UInt8> {
-        let base64 = "AGFzbQEAAAABCwJgAn5/AX9gAAF/AhkBB2ltcG9ydHMNaW1wb3J0ZWRfZnVuYwAAAwIBAQcRAQ1leHBvcnRlZF9mdW5jAAEKEQEPAQF/QipB+2UQACAAIQAL"
-        guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("simple-import.wasm") }
+    private func importedAddFunc() throws -> Array<UInt8> {
+        let base64 = "AGFzbQEAAAABCwJgAn5/AX9gAAF/Ah0BB2ltcG9ydHMRaW1wb3J0ZWRfYWRkX2Z1bmMAAAMCAQEHGQEVaW50ZWdlcl9wcm92aWRlcl9mdW5jAAEKDQELAQF/QipB+2UQAAs="
+        guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("imported-add.wasm") }
         return Array<UInt8>(data)
     }
 }

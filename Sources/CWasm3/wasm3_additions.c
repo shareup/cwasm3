@@ -77,5 +77,7 @@ M3Result  wasm3_CallWithArgs(
     }
     else _throw (m3Err_missingCompiledCode);
 
-    _catch: return result;
+_catch: {
+    return result;
+}
 }
