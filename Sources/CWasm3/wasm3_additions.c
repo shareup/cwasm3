@@ -11,7 +11,7 @@ M3Result  wasm3_CallWithArgs(
     size_t *o_size,
     void *o_ret
 ) {
-    *o_size = 0;
+    if (o_size) { *o_size = 0; }
     M3Result result = m3Err_none;
 
     if (i_function->compiled)
@@ -54,7 +54,7 @@ M3Result  wasm3_CallWithArgs(
 
         switch (ftype->returnType) {
             case c_m3Type_none:
-                *o_size = 0;
+                if (o_size) { *o_size = 0; }
                 break;
             case c_m3Type_i32:
                 *o_size = sizeof(u32);
