@@ -1,9 +1,6 @@
 import XCTest
 @testable import CWasm3
 
-private let heapMemoryWriteLength = 13
-private let heapMemoryWriteLengthInt32 = Int32(heapMemoryWriteLength)
-
 final class CWasm3Tests: XCTestCase {
     func testCanCreateEnvironmentAndRuntime() throws {
         let environment = m3_NewEnvironment()
@@ -108,7 +105,7 @@ final class CWasm3Tests: XCTestCase {
         XCTAssertEqual(-3291, sum)
     }
 
-    func testModifyingHeapMemory() throws {
+    func testModifyingHeapMemoryInsideImportedFunction() throws {
         let environment = m3_NewEnvironment()
         defer { m3_FreeEnvironment(environment) }
 
@@ -121,10 +118,6 @@ final class CWasm3Tests: XCTestCase {
         var module: IM3Module?
         XCTAssertNil(m3_ParseModule(environment, &module, addBytes, UInt32(addBytes.count)))
         XCTAssertNil(m3_LoadModule(runtime, module))
-
-        XCTAssertNil(m3_LinkRawFunction(
-            module, "native", "write_length", "i()", importedWriteLength(runtime:stackPointer:memory:)
-        ))
 
         XCTAssertNil(m3_LinkRawFunction(
             module, "native", "write", "v(i i)", importedWrite(runtime:stackPointer:memory:)
@@ -141,7 +134,7 @@ final class CWasm3Tests: XCTestCase {
 
         let heapString = String(
             bytesNoCopy: heap,
-            length: heapMemoryWriteLength,
+            length: 13, // defined inside of memory.wasm
             encoding: .utf8,
             freeWhenDone: false
         )
@@ -155,20 +148,8 @@ final class CWasm3Tests: XCTestCase {
         ("testCanCallAndReceiveReturnValueFromAdd", testCanCallAndReceiveReturnValueFromAdd),
         ("testCanCallAndReceiveReturnValueFromFibonacci", testCanCallAndReceiveReturnValueFromFibonacci),
         ("testImportingNativeFunction", testImportingNativeFunction),
-        ("testModifyingHeapMemory", testModifyingHeapMemory),
+        ("testModifyingHeapMemoryInsideImportedFunction", testModifyingHeapMemoryInsideImportedFunction),
     ]
-}
-
-private func importedWriteLength(
-    runtime: IM3Runtime?,
-    stackPointer: UnsafeMutablePointer<UInt64>?,
-    memory: UnsafeMutableRawPointer?
-) -> UnsafeRawPointer? {
-    guard let stackPointer = UnsafeMutableRawPointer(stackPointer) else {
-        return UnsafeRawPointer(m3Err_trapUnreachable)
-    }
-    stackPointer.storeBytes(of: heapMemoryWriteLengthInt32, as: Int32.self)
-    return nil
 }
 
 private func importedWrite(
@@ -238,7 +219,7 @@ extension CWasm3Tests {
     }
 
     private func memoryWasm() throws -> Array<UInt8> {
-        let base64 = "AGFzbQEAAAABDQNgAAF/YAJ/fwBgAAACJgIGbmF0aXZlDHdyaXRlX2xlbmd0aAAABm5hdGl2ZQV3cml0ZQABAwIBAgUDAQABBw4BCndyaXRlX3V0ZjgAAgoQAQ4BAX8QACEAQQAgABABCw=="
+        let base64 = "AGFzbQEAAAABCQJgAn9/AGAAAAIQAQZuYXRpdmUFd3JpdGUAAAMCAQEFAwEAAQcOAQp3cml0ZV91dGY4AAEKCgEIAEEAQQ0QAAs="
         guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("memory.wasm") }
         return Array<UInt8>(data)
     }
