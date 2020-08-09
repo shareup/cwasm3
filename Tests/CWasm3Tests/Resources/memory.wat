@@ -4,5 +4,9 @@
   (func (export "write_utf8")
     i32.const 0 ;; offset of 0
     i32.const 13 ;; length of 13
-    (call $write)))
-
+    (call $write))
+  (func (export "modify_utf8") (param $offset i32)
+    local.get $offset
+    (i32.store
+      (local.get $offset)
+      (i32.add (i32.load) (i32.const 1)))))

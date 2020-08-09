@@ -29,11 +29,10 @@ final class CWasm3Tests: XCTestCase {
         var addFunction: IM3Function?
         XCTAssertNil(m3_FindFunction(&addFunction, runtime, "add"))
 
-        let result = ["3", "12345"].withCStrings { (arguments) -> Int32 in
-            var mutableArguments = arguments
+        let result = ["3", "12345"].withCStrings { (args) -> Int32 in
             let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
             let output = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
-            XCTAssertNil(wasm3_CallWithArgs(addFunction, UInt32(2), &mutableArguments, size, output))
+            XCTAssertNil(wasm3_CallWithArgs(addFunction, UInt32(2), args, size, output))
             XCTAssertEqual(MemoryLayout<Int32>.size, size.pointee)
             return output.pointee
         }
@@ -58,11 +57,10 @@ final class CWasm3Tests: XCTestCase {
         var fibonacciFunction: IM3Function?
         XCTAssertNil(m3_FindFunction(&fibonacciFunction, runtime, "fib"))
 
-        let result = ["25"].withCStrings { (arguments) -> Int64 in
-            var mutableArguments = arguments
+        let result = ["25"].withCStrings { (args) -> Int64 in
             let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
             let output = UnsafeMutablePointer<Int64>.allocate(capacity: 1)
-            XCTAssertNil(wasm3_CallWithArgs(fibonacciFunction, UInt32(1), &mutableArguments, size, output))
+            XCTAssertNil(wasm3_CallWithArgs(fibonacciFunction, UInt32(1), args, size, output))
             XCTAssertEqual(MemoryLayout<Int64>.size, size.pointee)
             return output.pointee
         }
@@ -128,19 +126,51 @@ final class CWasm3Tests: XCTestCase {
 
         XCTAssertNil(wasm3_CallWithArgs(writeUTF8Function, UInt32(0), nil, nil, nil))
 
-        let heapBytes = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
-        defer { heapBytes.deallocate() }
-        let heap = try XCTUnwrap(UnsafeMutableRawPointer(m3_GetMemory(runtime, heapBytes, 0)))
-
-        let heapString = String(
-            bytesNoCopy: heap,
-            length: 13, // defined inside of memory.wasm
-            encoding: .utf8,
-            freeWhenDone: false
+        var heapBytes: Int = 0
+        let heapString = try runtime.stringFromHeap(
+            offset: 0,
+            length: 13, // defined in memory.wasm
+            totalHeapBytes: &heapBytes
         )
 
-        XCTAssertEqual(65536, heapBytes.pointee) // defined inside of memory.wasm
+        XCTAssertEqual(65536, heapBytes) // minimum heap size defined in memory.wasm
         XCTAssertEqual("DDDDDDDDDDDDD", heapString)
+    }
+
+    func testModifyHeapMemoryInsideOfWasmFunction() throws {
+        let environment = m3_NewEnvironment()
+        defer { m3_FreeEnvironment(environment) }
+
+        let runtime = m3_NewRuntime(environment, 512, nil)
+        defer { m3_FreeRuntime(runtime) }
+
+        var addBytes = try memoryWasm()
+        defer { addBytes.removeAll() }
+
+        var module: IM3Module?
+        XCTAssertNil(m3_ParseModule(environment, &module, addBytes, UInt32(addBytes.count)))
+        XCTAssertNil(m3_LoadModule(runtime, module))
+
+        XCTAssertNil(m3_LinkRawFunction(
+            module, "native", "write", "v(i i)", importedWrite(runtime:stackPointer:memory:)
+        ))
+
+        var writeUTF8Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&writeUTF8Function, runtime, "write_utf8"))
+
+        var modifyUTF8Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&modifyUTF8Function, runtime, "modify_utf8"))
+
+        XCTAssertNil(wasm3_CallWithArgs(writeUTF8Function, UInt32(0), nil, nil, nil))
+
+        let beforeModification = try runtime.stringFromHeap(offset: 0, length: 13)
+        XCTAssertEqual("DDDDDDDDDDDDD", beforeModification)
+
+        let afterModification = try ["4"].withCStrings { (args) throws -> String in
+            XCTAssertNil(wasm3_CallWithArgs(modifyUTF8Function, UInt32(1), args, nil, nil))
+            return try runtime.stringFromHeap(offset: 0, length: 13) // length defined in memory.wasm
+        }
+        XCTAssertEqual("DDDDEDDDDDDDD", afterModification)
     }
 
     static var allTests = [
@@ -149,6 +179,7 @@ final class CWasm3Tests: XCTestCase {
         ("testCanCallAndReceiveReturnValueFromFibonacci", testCanCallAndReceiveReturnValueFromFibonacci),
         ("testImportingNativeFunction", testImportingNativeFunction),
         ("testModifyingHeapMemoryInsideImportedFunction", testModifyingHeapMemoryInsideImportedFunction),
+        ("testModifyHeapMemoryInsideOfWasmFunction", testModifyHeapMemoryInsideOfWasmFunction),
     ]
 }
 
@@ -191,6 +222,22 @@ private func importedAdd(
     return nil
 }
 
+private extension Optional where Wrapped == IM3Runtime {
+    func stringFromHeap(offset: Int, length: Int, totalHeapBytes: UnsafeMutablePointer<Int>? = nil) throws -> String {
+        let heapBytes = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
+        defer { heapBytes.deallocate() }
+
+        let heap: UnsafeMutableRawPointer = try XCTUnwrap(
+            UnsafeMutableRawPointer(m3_GetMemory(self, heapBytes, 0).advanced(by: offset))
+        )
+
+        totalHeapBytes?.pointee = Int(heapBytes.pointee)
+
+        let ptr = heap.bindMemory(to: CChar.self, capacity: length)
+        return String(cString: ptr)
+    }
+}
+
 extension CWasm3Tests {
     // compile and copy base64 binaries in Bash via:
     // `wat2wasm -o >(base64) path/to/file.wat | pbcopy`
@@ -219,7 +266,7 @@ extension CWasm3Tests {
     }
 
     private func memoryWasm() throws -> Array<UInt8> {
-        let base64 = "AGFzbQEAAAABCQJgAn9/AGAAAAIQAQZuYXRpdmUFd3JpdGUAAAMCAQEFAwEAAQcOAQp3cml0ZV91dGY4AAEKCgEIAEEAQQ0QAAs="
+        let base64 = "AGFzbQEAAAABDQNgAn9/AGAAAGABfwACEAEGbmF0aXZlBXdyaXRlAAADAwIBAgUDAQABBxwCCndyaXRlX3V0ZjgAAQttb2RpZnlfdXRmOAACChoCCABBAEENEAALDwAgACAAKAIAQQFqNgIACw=="
         guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("memory.wasm") }
         return Array<UInt8>(data)
     }
