@@ -86,7 +86,7 @@ final class CWasm3Tests: XCTestCase {
 
         // The imported function needs to linked before the exported function can be referenced.
         XCTAssertNil(m3_LinkRawFunction(
-            module, "imports", "imported_add_func", "i(I i)", importedAdd(runtime:stackPointer:memory:)
+            module, "imports", "imported_add_func", "i(i I)", importedAdd(runtime:stackPointer:memory:)
         ))
 
         var integerProviderFunction: IM3Function?
@@ -126,9 +126,10 @@ private func importedAdd(
         return UnsafeRawPointer(m3Err_trapUnreachable)
     }
 
-    let first = stackPointer.load(as: Int64.self)
-    let second = stackPointer.load(fromByteOffset: MemoryLayout<Int64>.stride, as: Int32.self)
-    let sum = Int32(first + Int64(second))
+    let first = stackPointer.load(as: Int32.self)
+    // wasm3 always aligns the stack to 64 bits
+    let second = stackPointer.load(fromByteOffset: MemoryLayout<Int64>.stride, as: Int64.self)
+    let sum = Int32(Int64(first) + second)
     stackPointer.storeBytes(of: sum, as: Int32.self)
 
     return nil
@@ -156,7 +157,7 @@ extension CWasm3Tests {
     }
 
     private func importedAddFunc() throws -> Array<UInt8> {
-        let base64 = "AGFzbQEAAAABCwJgAn5/AX9gAAF/Ah0BB2ltcG9ydHMRaW1wb3J0ZWRfYWRkX2Z1bmMAAAMCAQEHGQEVaW50ZWdlcl9wcm92aWRlcl9mdW5jAAEKDQELAQF/QipB+2UQAAs="
+        let base64 = "AGFzbQEAAAABCwJgAn9+AX9gAAF/Ah0BB2ltcG9ydHMRaW1wb3J0ZWRfYWRkX2Z1bmMAAAMCAQEHGQEVaW50ZWdlcl9wcm92aWRlcl9mdW5jAAEKCwEJAEH7ZUIqEAAL"
         guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("imported-add.wasm") }
         return Array<UInt8>(data)
     }

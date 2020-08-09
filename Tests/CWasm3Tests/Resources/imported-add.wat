@@ -1,7 +1,6 @@
 (module
-  (import "imports" "imported_add_func" (func $imported_add_func (param $lhs i64) (param $rhs i32) (result i32)))
+  (import "imports" "imported_add_func" (func $imported_add_func (param $rhs i32) (param $lhs i64) (result i32)))
   (func (export "integer_provider_func") (result i32)
-    (local i32)
-    i64.const 42
     i32.const -3333
+    i64.const 42
     (call $imported_add_func)))
