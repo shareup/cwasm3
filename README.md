@@ -13,7 +13,7 @@ To use `CWasm3` with the Swift Package Manager, add a dependency to your Package
 ```swift
 let package = Package(
   dependencies: [
-    .package(url: "https://github.com/shareup/cwasm3.git", .upToNextMinor(from: "0.4.7"))
+    .package(name: "CWasm3", url: "https://github.com/shareup/cwasm3.git", .upToNextMinor(from: "0.4.7"))
   ]
 )
 ```
