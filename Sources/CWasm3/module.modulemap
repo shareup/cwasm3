@@ -1,4 +1,0 @@
-module CWasm3 {
-  header "include/CWasm3-Bridging-Header.h"
-  export *
-}

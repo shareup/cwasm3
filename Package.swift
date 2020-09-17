@@ -13,8 +13,7 @@ let package = Package(
     dependencies: [],
     targets: [
         .target(
-            name: "CWasm3",
-            path: "Sources/CWasm3"),
+            name: "CWasm3"),
         .testTarget(
             name: "CWasm3Tests",
             dependencies: ["CWasm3"]),
