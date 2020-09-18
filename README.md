@@ -20,7 +20,7 @@ let package = Package(
 
 ## Usage
 
-**The best way to learn how to use `CWasm3` is to look at the tests in `Tests/CWasm3Tests/CWasm3Tests.swift`.**
+**The best way to learn how to use `CWasm3` is to look at the tests in [`Tests/CWasm3Tests/CWasm3Tests.swift`](/Tests/CWasm3Tests/CWasm3Tests.swift).**
 
 That being said, this is how you can create an instance of the `Wasm3` runtime and load a Wasm module into it:
 
