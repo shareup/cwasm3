@@ -77,10 +77,12 @@ _   (m3ReallocArray (& io_module->functions, M3Function, io_module->numFunctions
         IM3Function func = Module_GetFunction (io_module, index);
         func->funcType = ft;
 
-        if (i_importInfo)
+        if (i_importInfo and func->numNames < d_m3MaxDuplicateFunctionImpl)
         {
             func->import = * i_importInfo;
-            func->name = i_importInfo->fieldUtf8;
+            u16 nameIndex = func->numNames;
+            func->numNames += 1;
+            func->names[nameIndex] = i_importInfo->fieldUtf8;
         }
 
         //          m3log (module, "   added function: %3d; sig: %d", index, i_typeIndex);

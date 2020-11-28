@@ -21,7 +21,7 @@ M3Result  wasm3_CallWithArgs(
         IM3Runtime runtime = module->runtime;
         runtime->argc = i_argc;
         runtime->argv = i_argv;
-        if (i_function->name and strcmp (i_function->name, "_start") == 0) // WASI
+        if (i_function->numNames == 1 and i_function->names[0] and strcmp (i_function->names[0], "_start") == 0) // WASI
             i_argc = 0;
 
         IM3FuncType ftype = i_function->funcType;
