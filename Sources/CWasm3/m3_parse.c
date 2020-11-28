@@ -462,7 +462,7 @@ _               (Read_utf8 (& name, & i_bytes, i_end));
                 {
                     if (io_module->functions [index].numNames == 0)
                     {
-                        io_module->functions [index].numNames++;
+                        io_module->functions [index].numNames = 1;
                         io_module->functions [index].names[0] = name;        m3log (parse, "    naming function%5d:  %s", index, name);
                         name = NULL; // transfer ownership
                     }

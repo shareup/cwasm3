@@ -80,7 +80,7 @@ _   (m3ReallocArray (& io_module->functions, M3Function, io_module->numFunctions
         if (i_importInfo and func->numNames == 0)
         {
             func->import = * i_importInfo;
-            func->numNames += 1;
+            func->numNames = 1;
             func->names[0] = i_importInfo->fieldUtf8;
         }
 
