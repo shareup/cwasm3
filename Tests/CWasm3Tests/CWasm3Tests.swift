@@ -12,6 +12,40 @@ final class CWasm3Tests: XCTestCase {
         XCTAssertNotNil(runtime)
     }
 
+    func testCanCallFunctionsWithSameImplementations() throws {
+        let environment = m3_NewEnvironment()
+        defer { m3_FreeEnvironment(environment) }
+
+        let runtime = m3_NewRuntime(environment, 512, nil)
+        defer { m3_FreeRuntime(runtime) }
+
+        var constantBytes = try constantWasm()
+        defer { constantBytes.removeAll() }
+
+        var module: IM3Module?
+        XCTAssertNil(m3_ParseModule(environment, &module, constantBytes, UInt32(constantBytes.count)))
+        XCTAssertNil(m3_LoadModule(runtime, module))
+
+        var constant1Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant1Function, runtime, "constant_1"))
+
+        var constant2Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant2Function, runtime, "constant_2"))
+
+        [constant1Function, constant2Function]
+            .forEach { (function) in
+                guard function != nil else { return XCTFail() }
+                let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
+                let output = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
+
+                XCTAssertNil(wasm3_CallWithArgs(function, 0, [], size, output))
+                XCTAssertEqual(65536, output.pointee)
+
+                size.deallocate()
+                output.deallocate()
+            }
+    }
+
     func testCanCallAndReceiveReturnValueFromAdd() throws {
         let environment = m3_NewEnvironment()
         defer { m3_FreeEnvironment(environment) }
@@ -175,6 +209,7 @@ final class CWasm3Tests: XCTestCase {
 
     static var allTests = [
         ("testCanCreateEnvironmentAndRuntime", testCanCreateEnvironmentAndRuntime),
+        ("testCanCallFunctionsWithSameImplementations", testCanCallFunctionsWithSameImplementations),
         ("testCanCallAndReceiveReturnValueFromAdd", testCanCallAndReceiveReturnValueFromAdd),
         ("testCanCallAndReceiveReturnValueFromFibonacci", testCanCallAndReceiveReturnValueFromFibonacci),
         ("testImportingNativeFunction", testImportingNativeFunction),
@@ -253,21 +288,32 @@ extension CWasm3Tests {
         return Array<UInt8>(data)
     }
 
+    private func constantWasm() throws -> Array<UInt8> {
+        let base64 =
+            "AGFzbQEAAAABBQFgAAF/AwIBAAcbAgpjb25zdGFudF8xAAAKY29uc3RhbnRfMgAACggBBgBBgIAECw=="
+        guard let data = Data(base64Encoded: base64)
+        else { throw TestError.couldNotDecodeWasm("constant.wasm") }
+        return Array<UInt8>(data)
+    }
+
     private func fibonacciWasm() throws -> Array<UInt8> {
         let base64 = "AGFzbQEAAAABBgFgAX4BfgMCAQAHBwEDZmliAAAKHwEdACAAQgJUBEAgAA8LIABCAn0QACAAQgF9EAB8Dws="
-        guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("fib64.wasm") }
+        guard let data = Data(base64Encoded: base64)
+        else { throw TestError.couldNotDecodeWasm("fib64.wasm") }
         return Array<UInt8>(data)
     }
 
     private func importedAddWasm() throws -> Array<UInt8> {
         let base64 = "AGFzbQEAAAABCwJgAn9+AX9gAAF/Ah0BB2ltcG9ydHMRaW1wb3J0ZWRfYWRkX2Z1bmMAAAMCAQEHGQEVaW50ZWdlcl9wcm92aWRlcl9mdW5jAAEKCwEJAEH7ZUIqEAAL"
-        guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("imported-add.wasm") }
+        guard let data = Data(base64Encoded: base64)
+        else { throw TestError.couldNotDecodeWasm("imported-add.wasm") }
         return Array<UInt8>(data)
     }
 
     private func memoryWasm() throws -> Array<UInt8> {
         let base64 = "AGFzbQEAAAABDQNgAn9/AGAAAGABfwACEAEGbmF0aXZlBXdyaXRlAAADAwIBAgUDAQABBxwCCndyaXRlX3V0ZjgAAQttb2RpZnlfdXRmOAACChoCCABBAEENEAALDwAgACAAKAIAQQFqNgIACw=="
-        guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("memory.wasm") }
+        guard let data = Data(base64Encoded: base64)
+        else { throw TestError.couldNotDecodeWasm("memory.wasm") }
         return Array<UInt8>(data)
     }
 }
