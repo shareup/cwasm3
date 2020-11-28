@@ -63,11 +63,9 @@ M3Result  wasm3_CallWithArgs(
                 }
                 break;
             case c_m3Type_f32:  {
-                union { u32 u; f32 f; } union32;
-                union32.f = * (f32 *)(stack);
                 if (o_size && o_ret) {
                     *o_size = sizeof(f32);
-                    *(f32 *)o_ret = union32.u;
+                    *(f32 *)o_ret = * (f32 *)(stack);;
                 }
                 break;
             }
