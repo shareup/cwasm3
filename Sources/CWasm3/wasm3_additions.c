@@ -21,7 +21,7 @@ M3Result  wasm3_CallWithArgs(
         IM3Runtime runtime = module->runtime;
         runtime->argc = i_argc;
         runtime->argv = i_argv;
-        if (i_function->name and strcmp (i_function->name, "_start") == 0) // WASI
+        if (i_function->numNames == 1 and i_function->names[0] and strcmp (i_function->names[0], "_start") == 0) // WASI
             i_argc = 0;
 
         IM3FuncType ftype = i_function->funcType;
@@ -63,11 +63,9 @@ M3Result  wasm3_CallWithArgs(
                 }
                 break;
             case c_m3Type_f32:  {
-                union { u32 u; f32 f; } union32;
-                union32.f = * (f32 *)(stack);
                 if (o_size && o_ret) {
                     *o_size = sizeof(f32);
-                    *(f32 *)o_ret = union32.u;
+                    *(f32 *)o_ret = * (f32 *)(stack);;
                 }
                 break;
             }
