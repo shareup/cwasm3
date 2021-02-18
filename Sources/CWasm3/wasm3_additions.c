@@ -40,7 +40,7 @@ M3Result  wasm3_CallWithArgs(
             u64 * s = & stack [i];
             ccstr_t str = i_argv[i];
 
-            switch (ftype->argTypes[i]) {
+            switch (ftype->types[ftype->numRets + i]) {
             case c_m3Type_i32:
             case c_m3Type_f32:  *(u32*)(s) = (u32)strtoul(str, NULL, 10);  break;
             case c_m3Type_i64:
@@ -52,7 +52,7 @@ M3Result  wasm3_CallWithArgs(
         m3StackCheckInit();
         _ ((M3Result) Call (i_function->compiled, (m3stack_t) stack, runtime->memory.mallocated, d_m3OpDefaultArgs));
 
-        switch (ftype->returnType) {
+        switch (GetSingleRetType(ftype)) {
             case c_m3Type_none:
                 if (o_size) { *o_size = 0; }
                 break;
