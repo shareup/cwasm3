@@ -118,7 +118,7 @@ final class CWasm3Tests: XCTestCase {
 
         // The imported function needs to linked before the exported function can be referenced.
         XCTAssertNil(m3_LinkRawFunction(
-            module, "imports", "imported_add_func", "i(i I)", importedAdd(runtime:stackPointer:memory:)
+            module, "imports", "imported_add_func", "i(i I)", importedAdd
         ))
 
         var integerProviderFunction: IM3Function?
@@ -152,7 +152,7 @@ final class CWasm3Tests: XCTestCase {
         XCTAssertNil(m3_LoadModule(runtime, module))
 
         XCTAssertNil(m3_LinkRawFunction(
-            module, "native", "write", "v(i i)", importedWrite(runtime:stackPointer:memory:)
+            module, "native", "write", "v(i i)", importedWrite
         ))
 
         var writeUTF8Function: IM3Function?
@@ -186,7 +186,7 @@ final class CWasm3Tests: XCTestCase {
         XCTAssertNil(m3_LoadModule(runtime, module))
 
         XCTAssertNil(m3_LinkRawFunction(
-            module, "native", "write", "v(i i)", importedWrite(runtime:stackPointer:memory:)
+            module, "native", "write", "v(i i)", importedWrite
         ))
 
         var writeUTF8Function: IM3Function?
@@ -221,7 +221,8 @@ final class CWasm3Tests: XCTestCase {
 private func importedWrite(
     runtime: IM3Runtime?,
     stackPointer: UnsafeMutablePointer<UInt64>?,
-    memory: UnsafeMutableRawPointer?
+    memory: UnsafeMutableRawPointer?,
+    userData: UnsafeMutableRawPointer?
 ) -> UnsafeRawPointer? {
     guard let stackPointer = UnsafeMutableRawPointer(stackPointer) else {
         return UnsafeRawPointer(m3Err_trapUnreachable)
@@ -242,7 +243,8 @@ private func importedWrite(
 private func importedAdd(
     runtime: IM3Runtime?,
     stackPointer: UnsafeMutablePointer<UInt64>?,
-    memory: UnsafeMutableRawPointer?
+    memory: UnsafeMutableRawPointer?,
+    userData: UnsafeMutableRawPointer?
 ) -> UnsafeRawPointer? {
     guard let stackPointer = UnsafeMutableRawPointer(stackPointer) else {
         return UnsafeRawPointer(m3Err_trapUnreachable)

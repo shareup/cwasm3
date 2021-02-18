@@ -9,7 +9,6 @@
 #define m3_info_h
 
 #include "m3_compile.h"
-#include "m3_env.h"
 
 d_m3BeginExternC
 

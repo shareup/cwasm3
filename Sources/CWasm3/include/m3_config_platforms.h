@@ -18,7 +18,7 @@
 #define M3_CONCAT__(a,b) a##b
 #define M3_CONCAT(a,b)   M3_CONCAT__(a,b)
 
-# if !defined(__cplusplus)
+# if !defined(__cplusplus) || defined(_MSC_VER)
 #   define not      !
 #   define and      &&
 #   define or       ||
@@ -405,10 +405,10 @@ typedef int8_t          i8;
 # if defined(ARDUINO) || defined(PARTICLE) || defined(PLATFORMIO) || defined(__MBED__) || \
      defined(ESP8266) || defined(ESP32) || defined(BLUE_PILL) || defined(WM_W600) || defined(FOMU)
 #  ifndef d_m3LogOutput
-#    define d_m3LogOutput                       false
+#    define d_m3LogOutput                       0
 #  endif
 #  ifndef d_m3VerboseLogs
-#    define d_m3VerboseLogs                     false
+#    define d_m3VerboseLogs                     0
 #  endif
 #  ifndef d_m3MaxFunctionStackHeight
 #    define d_m3MaxFunctionStackHeight          64

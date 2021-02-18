@@ -15,19 +15,7 @@
 
 d_m3BeginExternC
 
-typedef struct M3FuncType
-{
-    struct M3FuncType *     next;
-
-    u32                     numArgs;
-    u8                      returnType;
-    u8                      argTypes        [3];    // M3FuncType is a dynamically sized object; these are padding
-}
-M3FuncType;
-
-typedef M3FuncType *        IM3FuncType;
-
-M3Result    AllocFuncType                   (IM3FuncType * o_functionType, u32 i_numArgs);
+M3Result    AllocFuncType                   (IM3FuncType * o_functionType, u32 i_numTypes);
 bool        AreFuncTypesEqual               (const IM3FuncType i_typeA, const IM3FuncType i_typeB);
 
 
@@ -41,7 +29,7 @@ typedef struct M3Function
     bytes_t                 wasm;
     bytes_t                 wasmEnd;
 
-    u16                     numNames;                               // maximum of d_m3MaxDuplicateFunctionImpl
+    u16                     numNames;               // maximum of d_m3MaxDuplicateFunctionImpl
     cstr_t                  names[d_m3MaxDuplicateFunctionImpl];
 
     IM3FuncType             funcType;
@@ -49,7 +37,7 @@ typedef struct M3Function
     pc_t                    compiled;
 
 #   if (d_m3EnableCodePageRefCounting)
-    IM3CodePage *           codePageRefs;                           // array of all pages used
+    IM3CodePage *           codePageRefs;           // array of all pages used
     u32                     numCodePageRefs;
 #   endif
 
@@ -61,7 +49,7 @@ typedef struct M3Function
 
     u16                     numArgSlots;
 
-    u16                     numLocals;                              // not including args
+    u16                     numLocals;          // not including args
     u16                     numLocalBytes;
 
     void *                  constants;
@@ -79,7 +67,6 @@ cstr_t      GetFunctionName             (IM3Function i_function);
 cstr_t *    GetFunctionNames            (IM3Function i_function, u16 * o_numNames);
 u32         GetFunctionNumArgs          (IM3Function i_function);
 u32         GetFunctionNumReturns       (IM3Function i_function);
-u8          GetFunctionReturnType       (IM3Function i_function);
 
 u32         GetFunctionNumArgsAndLocals (IM3Function i_function);
 
@@ -198,15 +185,13 @@ IM3Function                 Module_GetFunction          (IM3Module i_module, u32
 
 //---------------------------------------------------------------------------------------------------------------------------------
 
-static const u32 c_m3NumTypesPerPage = 8;
-
-//---------------------------------------------------------------------------------------------------------------------------------
-
 typedef struct M3Environment
 {
 //    struct M3Runtime *      runtimes;
 
     IM3FuncType             funcTypes;          // linked list
+
+    IM3FuncType             retFuncTypes[5];
 
     M3CodePage *            pagesReleased;
 }
@@ -219,8 +204,6 @@ void                        Environment_AddFuncType     (IM3Environment i_enviro
 
 //---------------------------------------------------------------------------------------------------------------------------------
 
-// OPTZ: function types need to move to the runtime structure so that all modules can share types
-// then type equality can be a simple pointer compare for indirect call checks
 typedef struct M3Runtime
 {
     M3Compilation           compilation;
@@ -239,19 +222,21 @@ typedef struct M3Runtime
     u32                     stackSize;
     u32                     numStackSlots;
 
+    i32                     exit_code;
     u32                     argc;
     ccstr_t *               argv;
 
-    M3Result                runtimeError;
+    void *                  userdata;
 
     M3Memory                memory;
     u32                     memoryLimit;
 
+    M3Result                runtimeError;
+
     M3ErrorInfo             error;
 #if d_m3VerboseLogs
-    char                    error_message[256];
+    char                    error_message[256]; // the actual buffer. M3ErrorInfo can point to this
 #endif
-    i32                     exit_code;
 }
 M3Runtime;
 

@@ -25,7 +25,7 @@
 # endif
 
 # ifndef d_m3MaxFunctionSlots
-#   define d_m3MaxFunctionSlots                 4000    // twice d_m3MaxFunctionStackHeight
+#   define d_m3MaxFunctionSlots                 ((d_m3MaxFunctionStackHeight)*2)
 # endif
 
 # ifndef d_m3MaxConstantTableSize
@@ -70,6 +70,10 @@
 
 # ifndef d_m3EnableOpTracing
 #   define d_m3EnableOpTracing                  0       // only works with DEBUG
+# endif
+
+# ifndef d_m3EnableStrace
+#   define d_m3EnableStrace                     0       // trace exported function calls
 # endif
 
 
@@ -121,6 +125,10 @@
 # ifndef d_m3HasFloat
 #   define d_m3HasFloat                         1       // implement floating point ops
 # endif
+
+#if !d_m3HasFloat && !defined(d_m3NoFloatDynamic)
+#   define d_m3NoFloatDynamic                   1       // if no floats, do not fail until flops are actually executed
+#endif
 
 # ifndef d_m3SkipStackCheck
 #   define d_m3SkipStackCheck                   0       // skip stack overrun checks

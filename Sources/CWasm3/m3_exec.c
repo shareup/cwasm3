@@ -117,17 +117,51 @@ d_m3OpDef  (CallIndirect)
 d_m3OpDef  (CallRawFunction)
 {
     M3RawCall call = (M3RawCall) (* _pc++);
+    IM3Function function = immediate (IM3Function);
+    void * userdata = immediate (void *);
+    u64* const sp = ((u64*)_sp);
 
-    m3ret_t possible_trap = call (m3MemRuntime(_mem), (u64 *) _sp, m3MemData(_mem));
-    return possible_trap;
-}
+#if d_m3EnableStrace
+    IM3FuncType ftype = function->funcType;
 
-d_m3OpDef  (CallRawFunctionEx)
-{
-    M3RawCallEx call = (M3RawCallEx) (* _pc++);
-    void * cookie = immediate (void *);
+    FILE* out = stderr;
+    char outbuff[1024];
+    char* outp = outbuff;
+    char* oute = outbuff+1024;
 
-    m3ret_t possible_trap = call (m3MemRuntime(_mem), (u64 *)_sp, m3MemData(_mem), cookie);
+    outp += snprintf(outp, oute-outp, "%s.%s(", function->import.moduleUtf8, function->import.fieldUtf8);
+
+    const int nArgs = ftype->numArgs;
+    const int nRets = ftype->numRets;
+    for (int i=0; i<nArgs; i++) {
+        const int type = ftype->types[nRets + i];
+        switch (type) {
+        case c_m3Type_i32:  outp += snprintf(outp, oute-outp, "%i",   *(i32*)(sp+i)); break;
+        case c_m3Type_i64:  outp += snprintf(outp, oute-outp, "%lli", *(i64*)(sp+i)); break;
+        case c_m3Type_f32:  outp += snprintf(outp, oute-outp, "%f",   *(f32*)(sp+i)); break;
+        case c_m3Type_f64:  outp += snprintf(outp, oute-outp, "%lf",  *(f64*)(sp+i)); break;
+        default:            outp += snprintf(outp, oute-outp, "<unknown type %d>", type); break;
+        }
+        outp += snprintf(outp, oute-outp, (i < nArgs-1) ? ", " : ")");
+    }
+#endif
+
+    m3ret_t possible_trap = call (m3MemRuntime(_mem), sp, m3MemData(_mem), userdata);
+
+#if d_m3EnableStrace
+    if (possible_trap) {
+        fprintf(out, "%s -> %s\n", outbuff, possible_trap);
+    } else {
+        switch (GetSingleRetType(ftype)) {
+        case c_m3Type_none: fprintf(out, "%s\n", outbuff); break;
+        case c_m3Type_i32:  fprintf(out, "%s = %i\n",   outbuff, *(i32*)sp); break;
+        case c_m3Type_i64:  fprintf(out, "%s = %lli\n", outbuff, *(i64*)sp); break;
+        case c_m3Type_f32:  fprintf(out, "%s = %f\n",   outbuff, *(f32*)sp); break;
+        case c_m3Type_f64:  fprintf(out, "%s = %lf\n",  outbuff, *(f64*)sp); break;
+        }
+    }
+#endif
+
     return possible_trap;
 }
 
@@ -225,14 +259,12 @@ d_m3OpDef  (Entry)
         m3ret_t r = nextOpDirect ();
 
 #       if d_m3LogExec
-            u8 returnType = function->funcType->returnType;
-
             char str [100] = { '!', 0 };
 
             if (not r)
-                SPrintArg (str, 99, _sp, function->funcType->returnType);
+                SPrintArg (str, 99, _sp, GetSingleRetType(function->funcType));
 
-            m3log (exec, " exit  < %s %s %s   %s", function->name, returnType ? "->" : "", str, r ? (cstr_t)r : "");
+            m3log (exec, " exit  < %s %s %s   %s", function->name, function->funcType->numRets ? "->" : "", str, r ? (cstr_t)r : "");
 #       elif d_m3LogStackTrace
             if (r)
                 printf (" ** %s  %p\n", function->name, _sp);
@@ -437,7 +469,7 @@ void  ProfileHit  (cstr_t i_operationName)
     {
         if (slot->opName != i_operationName)
         {
-            m3Abort ("profiler slot collision; increase d_m3ProfilerSlotMask");
+            m3_Abort ("profiler slot collision; increase d_m3ProfilerSlotMask");
         }
     }
 
