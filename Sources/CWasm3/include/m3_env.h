@@ -10,7 +10,6 @@
 
 #include "wasm3.h"
 #include "m3_code.h"
-#include "m3_exec.h"
 #include "m3_compile.h"
 
 d_m3BeginExternC
@@ -29,8 +28,7 @@ typedef struct M3Function
     bytes_t                 wasm;
     bytes_t                 wasmEnd;
 
-    u16                     numNames;               // maximum of d_m3MaxDuplicateFunctionImpl
-    cstr_t                  names[d_m3MaxDuplicateFunctionImpl];
+    cstr_t                  name;
 
     IM3FuncType             funcType;
 
@@ -55,7 +53,7 @@ typedef struct M3Function
     void *                  constants;
     u16                     numConstantBytes;
 
-    bool                    ownsWasmCode;
+    //bool                    ownsWasmCode;
 }
 M3Function;
 
@@ -64,7 +62,6 @@ void        Function_FreeCompiledCode   (IM3Function i_function);
 
 cstr_t      GetFunctionImportModuleName (IM3Function i_function);
 cstr_t      GetFunctionName             (IM3Function i_function);
-cstr_t *    GetFunctionNames            (IM3Function i_function, u16 * o_numNames);
 u32         GetFunctionNumArgs          (IM3Function i_function);
 u32         GetFunctionNumReturns       (IM3Function i_function);
 
@@ -148,7 +145,7 @@ typedef struct M3Module
     IM3FuncType *           funcTypes;          // array of pointers to list of FuncTypes
 
     u32                     numImports;
-    IM3Function *           imports;            // notice: "I" prefix. imports are pointers to functions in another module.
+    //IM3Function *           imports;   b         // notice: "I" prefix. imports are pointers to functions in another module.
 
     u32                     numFunctions;
     M3Function *            functions;
@@ -158,7 +155,7 @@ typedef struct M3Module
     u32                     numDataSegments;
     M3DataSegment *         dataSegments;
 
-    u32                     importedGlobals;
+    //u32                     importedGlobals;
     u32                     numGlobals;
     M3Global *              globals;
 
@@ -172,7 +169,7 @@ typedef struct M3Module
     M3MemoryInfo            memoryInfo;
     bool                    memoryImported;
 
-    bool                    hasWasmCodeCopy;
+    //bool                    hasWasmCodeCopy;
 
     struct M3Module *       next;
 }
@@ -221,10 +218,7 @@ typedef struct M3Runtime
     void *                  stack;
     u32                     stackSize;
     u32                     numStackSlots;
-
-    i32                     exit_code;
-    u32                     argc;
-    ccstr_t *               argv;
+    IM3Function				lastCalled;		// last function that successfully executed
 
     void *                  userdata;
 
@@ -253,8 +247,6 @@ void *                      v_FindFunction              (IM3Module i_module, con
 IM3CodePage                 AcquireCodePage             (IM3Runtime io_runtime);
 IM3CodePage                 AcquireCodePageWithCapacity (IM3Runtime io_runtime, u32 i_lineCount);
 void                        ReleaseCodePage             (IM3Runtime io_runtime, IM3CodePage i_codePage);
-
-M3Result                    m3Error                     (M3Result i_result, IM3Runtime i_runtime, IM3Module i_module, IM3Function i_function, const char * const i_file, u32 i_lineNum, const char * const i_errorMessage, ...);
 
 d_m3EndExternC
 

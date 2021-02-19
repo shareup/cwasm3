@@ -43,6 +43,9 @@ typedef uint8_t         u8;
 typedef int8_t          i8;
 #endif // d_m3ShortTypesDefined
 
+#define PRIf32          "f"
+#define PRIf64          "lf"
+
 typedef const void *            m3ret_t;
 typedef const void *            voidptr_t;
 typedef const char *            cstr_t;
@@ -65,7 +68,7 @@ typedef m3slot_t *              m3stack_t;
 typedef
 const void * const  cvptr_t;
 
-# if d_m3LogOutput && defined (DEBUG)
+# if defined (DEBUG)
 
 #   define d_m3Log(CATEGORY, FMT, ...)                  printf (" %8s  |  " FMT, #CATEGORY, ##__VA_ARGS__);
 

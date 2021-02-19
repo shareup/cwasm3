@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <stdarg.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -41,11 +42,10 @@ typedef struct M3ErrorInfo
     uint32_t        line;
 
     const char *    message;
-}
-M3ErrorInfo;
+} M3ErrorInfo;
 
 
-enum // EWaTypes
+typedef enum M3ValueType
 {
     c_m3Type_none   = 0,
     c_m3Type_i32    = 1,
@@ -54,15 +54,13 @@ enum // EWaTypes
     c_m3Type_f64    = 4,
 
     c_m3Type_unknown
-};
+} M3ValueType;
 
 
 typedef struct M3ImportInfo
 {
     const char *    moduleUtf8;
     const char *    fieldUtf8;
-
-//  unsigned char   type;
 }
 M3ImportInfo;
 
@@ -190,7 +188,7 @@ d_m3ErrorConst  (trapStackOverflow,             "[trap] stack overflow")
                                                      const char * const     i_moduleName,
                                                      const char * const     i_functionName,
                                                      const char * const     i_signature,
-													 M3RawCall              i_function);
+                                                     M3RawCall              i_function);
 
     M3Result            m3_LinkRawFunctionEx        (IM3Module              io_module,
                                                      const char * const     i_moduleName,
@@ -208,12 +206,23 @@ d_m3ErrorConst  (trapStackOverflow,             "[trap] stack overflow")
                                                      IM3Runtime             i_runtime,
                                                      const char * const     i_functionName);
 
-    M3Result            m3_Call                     (IM3Function i_function);
-    M3Result            m3_CallWithArgs             (IM3Function i_function, uint32_t i_argc, const char * const * i_argv);
+    uint32_t            m3_GetArgCount              (IM3Function i_function);
+    uint32_t            m3_GetRetCount              (IM3Function i_function);
+    M3ValueType         m3_GetArgType               (IM3Function i_function, uint32_t i_index);
+    M3ValueType         m3_GetRetType               (IM3Function i_function, uint32_t i_index);
+
+    M3Result            m3_CallV                    (IM3Function i_function, ...);
+    M3Result            m3_CallVL                   (IM3Function i_function, va_list i_args);
+    M3Result            m3_Call                     (IM3Function i_function, uint32_t i_argc, const void * i_argptrs[]);
+    M3Result            m3_CallArgv                 (IM3Function i_function, uint32_t i_argc, const char * i_argv[]);
+
+    M3Result            m3_GetResultsV              (IM3Function i_function, ...);
+    M3Result            m3_GetResultsVL             (IM3Function i_function, va_list o_rets);
+    M3Result            m3_GetResults               (IM3Function i_function, uint32_t i_retc, const void * o_retptrs[]);
 
     // IM3Functions are valid during the lifetime of the originating runtime
 
-    void                m3_GetErrorInfo             (IM3Runtime i_runtime, M3ErrorInfo* info);
+    void                m3_GetErrorInfo             (IM3Runtime i_runtime, M3ErrorInfo* o_info);
     void                m3_ResetErrorInfo           (IM3Runtime i_runtime);
 
 //-------------------------------------------------------------------------------------------------------------------------------

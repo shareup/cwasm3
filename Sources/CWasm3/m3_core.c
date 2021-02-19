@@ -11,7 +11,7 @@
 #include "m3_core.h"
 
 void m3_Abort(const char* message) {
-#if d_m3LogOutput
+#ifdef DEBUG
     fprintf(stderr, "Error: %s\n", message);
 #endif
     abort();
@@ -119,7 +119,7 @@ M3Result  m3_Malloc  (void ** o_ptr, size_t i_size)
 
 void  m3_Free  (void ** io_ptr)
 {
-//    if (i_ptr) printf("== free %p\n", i_ptr);
+//    if (io_ptr) printf("== free %p\n", io_ptr);
     free (* io_ptr);
     * io_ptr = NULL;
 }
@@ -141,7 +141,7 @@ M3Result  m3_Realloc  (void ** io_ptr, size_t i_newSize, size_t i_oldSize)
         }
         else result = m3Err_mallocFailed;
 
-//        printf("== realloc %p -> %p => %d\n", i_ptr, ptr, (u32) i_newSize);
+//        printf("== realloc %p -> %p => %d\n", io_ptr, io_ptr, (u32) i_newSize);
     }
 
     return result;
