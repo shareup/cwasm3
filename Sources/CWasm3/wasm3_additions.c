@@ -17,7 +17,7 @@ M3Result  wasm3_CallWithArgs(
 
     IM3FuncType ftype = i_function->funcType;
 
-    if (ftype->numRets == 0) {
+    if (ftype->numRets == 0 || o_ret == NULL) {
         if (o_size) { *o_size = 0; }
         return result;
     }
