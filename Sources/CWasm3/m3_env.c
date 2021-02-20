@@ -716,7 +716,7 @@ void *  v_FindFunction  (IM3Module i_module, const char * const i_name)
         bool isImported = f->import.moduleUtf8 or f->import.fieldUtf8;
 
         if (isImported)
-            return NULL;
+            continue;
 
         for (int i = 0; i < f->numNames; i++)
         {
