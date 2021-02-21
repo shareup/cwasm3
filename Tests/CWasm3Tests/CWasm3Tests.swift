@@ -32,7 +32,14 @@ final class CWasm3Tests: XCTestCase {
         var constant2Function: IM3Function?
         XCTAssertNil(m3_FindFunction(&constant2Function, runtime, "constant_2"))
 
-        [constant1Function, constant2Function]
+        var constant3Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant3Function, runtime, "constant_3"))
+
+        var constant4Function: IM3Function?
+        let err = try XCTUnwrap(m3_FindFunction(&constant4Function, runtime, "constant_4"))
+        XCTAssertEqual("function lookup failed", String(cString: err))
+
+        [constant1Function, constant2Function, constant3Function]
             .forEach { (function) in
                 guard function != nil else { return XCTFail() }
                 let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
@@ -292,7 +299,7 @@ extension CWasm3Tests {
 
     private func constantWasm() throws -> Array<UInt8> {
         let base64 =
-            "AGFzbQEAAAABBQFgAAF/AwIBAAcbAgpjb25zdGFudF8xAAAKY29uc3RhbnRfMgAACggBBgBBgIAECw=="
+            "AGFzbQEAAAABBQFgAAF/AwIBAAc1BApjb25zdGFudF8xAAAKY29uc3RhbnRfMgAACmNvbnN0YW50XzMAAApjb25zdGFudF80AAAKCAEGAEGAgAQL"
         guard let data = Data(base64Encoded: base64)
         else { throw TestError.couldNotDecodeWasm("constant.wasm") }
         return Array<UInt8>(data)
