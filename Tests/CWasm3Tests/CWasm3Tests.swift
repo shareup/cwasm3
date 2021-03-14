@@ -227,9 +227,9 @@ final class CWasm3Tests: XCTestCase {
 
 private func importedWrite(
     runtime: IM3Runtime?,
+    context: IM3ImportContext?,
     stackPointer: UnsafeMutablePointer<UInt64>?,
-    memory: UnsafeMutableRawPointer?,
-    userData: UnsafeMutableRawPointer?
+    memory: UnsafeMutableRawPointer?
 ) -> UnsafeRawPointer? {
     guard let stackPointer = UnsafeMutableRawPointer(stackPointer) else {
         return UnsafeRawPointer(m3Err_trapUnreachable)
@@ -249,9 +249,9 @@ private func importedWrite(
 
 private func importedAdd(
     runtime: IM3Runtime?,
+    context: IM3ImportContext?,
     stackPointer: UnsafeMutablePointer<UInt64>?,
-    memory: UnsafeMutableRawPointer?,
-    userData: UnsafeMutableRawPointer?
+    memory: UnsafeMutableRawPointer?
 ) -> UnsafeRawPointer? {
     guard let stackPointer = UnsafeMutableRawPointer(stackPointer) else {
         return UnsafeRawPointer(m3Err_trapUnreachable)
