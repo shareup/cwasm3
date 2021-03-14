@@ -1394,7 +1394,7 @@ _   (ReadLEB_u32 (& functionIndex, & o->wasm, o->wasmEnd));
 
     if (function)
     {                                                                   m3log (compile, d_indent " (func= '%s'; args= %d)",
-                                                                                get_indention_string (o), GetFunctionName (function), function->funcType->numArgs);
+                                                                                get_indention_string (o), m3_GetFunctionName (function), function->funcType->numArgs);
         if (function->module)
         {
             // OPTZ: could avoid arg copy when args are already sequential and at top
@@ -1422,7 +1422,7 @@ _           (EmitOp     (o, op));
         }
         else
         {
-            result = ErrorCompile (m3Err_functionImportMissing, o, "'%s.%s'", GetFunctionImportModuleName (function), GetFunctionName (function));
+            result = ErrorCompile (m3Err_functionImportMissing, o, "'%s.%s'", GetFunctionImportModuleName (function), m3_GetFunctionName (function));
         }
     }
     else result = m3Err_functionLookupFailed;
@@ -2168,6 +2168,7 @@ M3Result  Compile_BlockStatements  (IM3Compilation o)
 
     while (o->wasm < o->wasmEnd)
     {                                                                   emit_stack_dump (o);
+        o->lastOpcodeStart = o->wasm;
         m3opcode_t opcode = * (o->wasm++);                              log_opcode (o, opcode);
 
 #ifndef d_m3CompileExtendedOpcode
@@ -2340,7 +2341,7 @@ M3Result  Compile_Function  (IM3Function io_function)
     IM3FuncType ft = io_function->funcType;
 
     M3Result result = m3Err_none;                                     m3log (compile, "compiling: '%s'; wasm-size: %d; numArgs: %d; return: %s",
-                                                                           io_function->name, (u32) (io_function->wasmEnd - io_function->wasm), GetFunctionNumArgs (io_function), c_waTypes [GetSingleRetType(ft)]);
+                                                                           m3_GetFunctionName(io_function), (u32) (io_function->wasmEnd - io_function->wasm), GetFunctionNumArgs (io_function), c_waTypes [GetSingleRetType(ft)]);
     IM3Runtime runtime = io_function->module->runtime;
 
     IM3Compilation o = & runtime->compilation;

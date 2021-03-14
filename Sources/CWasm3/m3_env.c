@@ -91,7 +91,7 @@ void  Function_FreeCompiledCode (IM3Function i_function)
 
 
 
-cstr_t  GetFunctionName  (IM3Function i_function)
+cstr_t  m3_GetFunctionName  (IM3Function i_function)
 {
     u16 numNames = 0;
     cstr_t *names = GetFunctionNames(i_function, &numNames);
@@ -101,10 +101,15 @@ cstr_t  GetFunctionName  (IM3Function i_function)
         return "<unnamed>";
 }
 
+IM3Module  m3_GetFunctionModule  (IM3Function i_function)
+{
+    return i_function ? i_function->module : NULL;
+}
+
 
 cstr_t *  GetFunctionNames  (IM3Function i_function, u16 * o_numNames)
 {
-    if (o_numNames == NULL)
+    if (!i_function || !o_numNames)
         return NULL;
 
     if (i_function->import.fieldUtf8)
@@ -177,6 +182,8 @@ IM3Environment  m3_NewEnvironment  ()
     // create FuncTypes for all simple block return ValueTypes
     for (int t = c_m3Type_none; t <= c_m3Type_f64; t++)
     {
+        d_m3Assert (t < 5);
+
         IM3FuncType ftype;
         AllocFuncType (& ftype, 1);
         ftype->numArgs = 0;
@@ -199,7 +206,15 @@ void  Environment_Release  (IM3Environment i_environment)
         IM3FuncType next = ftype->next;
         m3Free (ftype);
         ftype = next;
-    }                                                       m3log (runtime, "freeing %d pages from environment", CountCodePages (i_environment->pagesReleased));
+    }
+    for (int t = c_m3Type_none; t <= c_m3Type_f64; t++)
+    {
+        d_m3Assert (t < 5);
+        ftype = i_environment->retFuncTypes[t];
+        d_m3Assert (ftype->next == NULL);
+        m3Free (ftype);
+    }
+    m3log (runtime, "freeing %d pages from environment", CountCodePages (i_environment->pagesReleased));
     FreeCodePages (& i_environment->pagesReleased);
 }
 
@@ -279,6 +294,9 @@ void  Environment_ReleaseCodePages  (IM3Environment i_environment, IM3CodePage i
     while (end)
     {
         end->info.lineIndex = 0; // reset page
+#if d_m3RecordBacktraces
+        end->info.mapping->size = 0;
+#endif // d_m3RecordBacktraces
 
         IM3CodePage next = end->info.next;
         if (not next)
@@ -324,8 +342,6 @@ void *  m3_GetUserData  (IM3Runtime i_runtime)
 {
     return i_runtime ? i_runtime->userdata : NULL;
 }
-
-typedef void * (* ModuleVisitor) (IM3Module i_module, void * i_info);
 
 void *  ForEachModule  (IM3Runtime i_runtime, ModuleVisitor i_visitor, void * i_info)
 {
@@ -420,6 +436,7 @@ M3Result  EvaluateExpression  (IM3Module i_module, void * o_expressed, u8 i_type
     o->module =  i_module;
     o->wasm =    * io_bytes;
     o->wasmEnd = i_end;
+    o->lastOpcodeStart = o->wasm;
 
     o->block.depth = -1;  // so that root compilation depth = 0
 
@@ -436,9 +453,8 @@ M3Result  EvaluateExpression  (IM3Module i_module, void * o_expressed, u8 i_type
         if (not result)
         {
             m3ret_t r = Call (m3code, stack, NULL, d_m3OpDefaultArgs);
-            result = runtime.runtimeError;
 
-            if (r == 0 and not result)
+            if (r == 0)
             {
                 if (SizeOfType (i_type) == sizeof (u32))
                 {
@@ -639,7 +655,7 @@ _           (m3ReallocArray (& io_module->table0, IM3Function, endElement, io_mo
                 u32 functionIndex;
 _               (ReadLEB_u32 (& functionIndex, & bytes, end));
                 _throwif ("function index out of range", functionIndex >= io_module->numFunctions);
-                IM3Function function = & io_module->functions [functionIndex];      d_m3Assert (function); //printf ("table: %s\n", function->name);
+                IM3Function function = & io_module->functions [functionIndex];      d_m3Assert (function); //printf ("table: %s\n", m3_GetFunctionName(function));
                 io_module->table0 [e + offset] = function;
             }
         }
@@ -649,11 +665,11 @@ _               (ReadLEB_u32 (& functionIndex, & bytes, end));
     _catch: return result;
 }
 
-M3Result  InitStartFunc  (IM3Module io_module)
+M3Result  m3_RunStart  (IM3Module io_module)
 {
     M3Result result = m3Err_none;
 
-    if (io_module->startFunction >= 0)
+    if (io_module and io_module->startFunction >= 0)
     {
         IM3Function function = & io_module->functions [io_module->startFunction];
 
@@ -718,9 +734,9 @@ void *  v_FindFunction  (IM3Module i_module, const char * const i_name)
         if (isImported)
             continue;
 
-        for (int i = 0; i < f->numNames; i++)
+        for (int j = 0; j < f->numNames; j++)
         {
-            if (f->names [i] and strcmp (f->names [i], i_name) == 0)
+            if (f->names [j] and strcmp (f->names [j], i_name) == 0)
                 return f;
         }
     }
@@ -752,7 +768,7 @@ M3Result  m3_FindFunction  (IM3Function * o_function, IM3Runtime i_runtime, cons
 
     // Check if start function needs to be called
     if (function and function->module->startFunction) {
-        result = InitStartFunc (function->module);
+        result = m3_RunStart (function->module);
         if (result)
             return result;
     }
@@ -825,6 +841,10 @@ M3Result  m3_CallVL  (IM3Function i_function, va_list i_args)
         return m3Err_missingCompiledCode;
     }
 
+# if d_m3RecordBacktraces
+    ClearBacktrace (runtime);
+# endif
+
     u8* s = (u8*) runtime->stack;
     for (u32 i = 0; i < ftype->numArgs; ++i)
     {
@@ -860,6 +880,10 @@ M3Result  m3_Call  (IM3Function i_function, uint32_t i_argc, const void * i_argp
     if (!i_function->compiled) {
         return m3Err_missingCompiledCode;
     }
+
+# if d_m3RecordBacktraces
+    ClearBacktrace (runtime);
+# endif
 
     u8* s = (u8*) runtime->stack;
     for (u32 i = 0; i < ftype->numArgs; ++i)
@@ -897,6 +921,10 @@ M3Result  m3_CallArgv  (IM3Function i_function, uint32_t i_argc, const char * i_
     if (!i_function->compiled) {
         return m3Err_missingCompiledCode;
     }
+
+# if d_m3RecordBacktraces
+    ClearBacktrace (runtime);
+# endif
 
     u8* s = (u8*) runtime->stack;
     for (u32 i = 0; i < ftype->numArgs; ++i)
@@ -1073,16 +1101,21 @@ M3Result  m3Error  (M3Result i_result, IM3Runtime i_runtime, IM3Module i_module,
 
 void  m3_GetErrorInfo  (IM3Runtime i_runtime, M3ErrorInfo* o_info)
 {
-    *o_info = i_runtime->error;
-
-    m3_ResetErrorInfo (i_runtime);
+    if (i_runtime)
+    {
+        *o_info = i_runtime->error;
+        m3_ResetErrorInfo (i_runtime);
+    }
 }
 
 
 void m3_ResetErrorInfo (IM3Runtime i_runtime)
 {
-    M3_INIT(i_runtime->error);
-    i_runtime->error.message = "";
+    if (i_runtime)
+    {
+        M3_INIT(i_runtime->error);
+        i_runtime->error.message = "";
+    }
 }
 
 uint8_t *  m3_GetMemory  (IM3Runtime i_runtime, uint32_t * o_memorySizeInBytes, uint32_t i_memoryIndex)
@@ -1103,3 +1136,13 @@ uint8_t *  m3_GetMemory  (IM3Runtime i_runtime, uint32_t * o_memorySizeInBytes, 
 
     return memory;
 }
+
+M3BacktraceInfo *  m3_GetBacktrace  (IM3Runtime i_runtime)
+{
+# if d_m3RecordBacktraces
+    return & i_runtime->backtrace;
+# else
+    return NULL;
+# endif
+}
+
