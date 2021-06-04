@@ -21,8 +21,11 @@ function replace_wasm3_with_branch() {
   git clone --depth 1 --branch $1 https://github.com/wasm3/wasm3.git &>/dev/null
 
   find wasm3/source -regex ".*\.c" -exec cp {} ../Sources/CWasm3/ \;
-  find wasm3/source | grep -E "source/(m3|was).*\.h" | xargs -I INPUT_FILE cp INPUT_FILE ../Sources/CWasm3/include/
+  find wasm3/source | \
+    grep -E "(source/|source/extensions/)(m3|was).*\.h" | \
+    xargs -I INPUT_FILE cp INPUT_FILE ../Sources/CWasm3/include/
   rm ../Sources/CWasm3/include/m3.h &>/dev/null # remove this deprecated header
+  rm ../Sources/CWasm3/include/m3_api_defs.h &>/dev/null # remove this deprecated header
 
   popd >/dev/null
 }
