@@ -257,10 +257,15 @@ private func importedAdd(
         return UnsafeRawPointer(m3Err_trapUnreachable)
     }
 
-    let first = stackPointer.load(as: Int32.self)
-    // wasm3 always aligns the stack to 64 bits
-    let second = stackPointer.load(fromByteOffset: MemoryLayout<Int64>.stride, as: Int64.self)
-    let sum = Int32(Int64(first) + second)
+    // Arguments and return values are passed in and out through the stack pointer _sp.
+    // Placeholder return value slots are first and arguments after. So, the first
+    // argument is at _sp [numReturns].
+    // Return values should be written into _sp [0] to _sp [num_returns - 1].
+    // Wasm3 always aligns the stack to 64 bits.
+    let offset = MemoryLayout<Int64>.stride
+    let first = stackPointer.load(fromByteOffset: offset, as: Int32.self)
+    let second = stackPointer.load(fromByteOffset: offset + offset, as: Int32.self)
+    let sum = first + second
     stackPointer.storeBytes(of: sum, as: Int32.self)
 
     return nil
