@@ -13,7 +13,10 @@ let package = Package(
     targets: [
         .target(
             name: "CWasm3",
-            cSettings: [.define("APPLICATION_EXTENSION_API_ONLY", to: "YES")]),
+            cSettings: [
+                .define("APPLICATION_EXTENSION_API_ONLY", to: "YES"),
+                .define("d_m3MaxDuplicateFunctionImpl", to: "10"),
+            ]),
         .testTarget(
             name: "CWasm3Tests",
             dependencies: ["CWasm3"],

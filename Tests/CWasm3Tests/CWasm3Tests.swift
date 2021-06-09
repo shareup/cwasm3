@@ -36,7 +36,28 @@ final class CWasm3Tests: XCTestCase {
         XCTAssertNil(m3_FindFunction(&constant3Function, runtime, "constant_3"))
 
         var constant4Function: IM3Function?
-        let err = try XCTUnwrap(m3_FindFunction(&constant4Function, runtime, "constant_4"))
+        XCTAssertNil(m3_FindFunction(&constant4Function, runtime, "constant_4"))
+
+        var constant5Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant5Function, runtime, "constant_5"))
+
+        var constant6Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant6Function, runtime, "constant_6"))
+
+        var constant7Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant7Function, runtime, "constant_7"))
+
+        var constant8Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant8Function, runtime, "constant_8"))
+
+        var constant9Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant9Function, runtime, "constant_9"))
+
+        var constant10Function: IM3Function?
+        XCTAssertNil(m3_FindFunction(&constant10Function, runtime, "constant_10"))
+
+        var constant11Function: IM3Function?
+        let err = try XCTUnwrap(m3_FindFunction(&constant11Function, runtime, "constant_11"))
         XCTAssertEqual("function lookup failed", String(cString: err))
 
         [constant1Function, constant2Function, constant3Function]
@@ -304,7 +325,7 @@ extension CWasm3Tests {
 
     private func constantWasm() throws -> Array<UInt8> {
         let base64 =
-            "AGFzbQEAAAABBQFgAAF/AwIBAAc1BApjb25zdGFudF8xAAAKY29uc3RhbnRfMgAACmNvbnN0YW50XzMAAApjb25zdGFudF80AAAKCAEGAEGAgAQL"
+            "AGFzbQEAAAABBQFgAAF/AwIBAAeSAQsKY29uc3RhbnRfMQAACmNvbnN0YW50XzIAAApjb25zdGFudF8zAAAKY29uc3RhbnRfNAAACmNvbnN0YW50XzUAAApjb25zdGFudF82AAAKY29uc3RhbnRfNwAACmNvbnN0YW50XzgAAApjb25zdGFudF85AAALY29uc3RhbnRfMTAAAAtjb25zdGFudF8xMQAACggBBgBBgIAECw=="
         guard let data = Data(base64Encoded: base64)
         else { throw TestError.couldNotDecodeWasm("constant.wasm") }
         return Array<UInt8>(data)
