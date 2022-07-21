@@ -7,7 +7,11 @@ on:
   pull_request:
     branches:
       - '*'
-      
+
+defaults:
+  run:
+    working-directory: vendor/cwasm3
+
 jobs:
   build:
     name: macOS
