@@ -1,7 +1,7 @@
 # CWasm3
 
-CWasm3.sha256
-CWasm3.zip
+CWasm3*.sha256
+CWasm3*.zip
 .wasm3
 
 

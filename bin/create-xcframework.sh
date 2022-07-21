@@ -22,6 +22,7 @@ swift create-xcframework \
   --xc-setting APPLICATION_EXTENSION_API_ONLY=YES \
   --xc-setting d_m3MaxDuplicateFunctionImpl=10 \
   --xc-setting MARKETING_VERSION=${VERSION} \
+  --zip-version ${VERSION} \
   --zip
 
 popd &>/dev/null
