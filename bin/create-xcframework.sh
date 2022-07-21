@@ -16,6 +16,7 @@ fi
 pushd "$VENDOR_CWASM3_DIR" &>/dev/null
 
 swift create-xcframework \
+  --output "${PROJECT_DIR}/framework" \
   --platform ios \
   --platform macos \
   --platform maccatalyst \
