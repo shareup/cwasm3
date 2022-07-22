@@ -1,6 +1,7 @@
 # CWasm3
 
 .wasm3
+/vendor/cwasm3-xcode/CWasm3/archives
 
 # from https://github.com/github/gitignore/blob/master/Swift.gitignore
 
