@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 import PackageDescription
 
 let package = Package(
@@ -16,7 +16,8 @@ let package = Package(
             cSettings: [
                 .define("APPLICATION_EXTENSION_API_ONLY", to: "YES"),
                 .define("d_m3MaxDuplicateFunctionImpl", to: "10"),
-            ]),
+            ]
+        ),
         .testTarget(
             name: "CWasm3Tests",
             dependencies: ["CWasm3"],
@@ -26,6 +27,7 @@ let package = Package(
                 "Resources/fib64.wat",
                 "Resources/imported-add.wat",
                 "Resources/memory.wat",
-            ]),
+            ]
+        ),
     ]
 )

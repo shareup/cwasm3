@@ -1,0 +1,28 @@
+framework module CWasm3 [system] {
+    requires c11
+
+    header "m3_api_libc.h"
+    header "m3_api_tracer.h"
+    header "m3_api_wasi.h"
+    header "m3_bind.h"
+    header "m3_code.h"
+    header "m3_compile.h"
+    header "m3_config.h"
+    header "m3_config_platforms.h"
+    header "m3_core.h"
+    header "m3_emit.h"
+    header "m3_env.h"
+    header "m3_exception.h"
+    header "m3_exec.h"
+    header "m3_exec_defs.h"
+    header "m3_function.h"
+    header "m3_info.h"
+    header "m3_math_utils.h"
+    header "wasm3.h"
+    header "wasm3_additions.h"
+    header "wasm3_defs.h"
+    header "wasm3_ext.h"
+
+    export *
+}
+
