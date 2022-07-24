@@ -12,12 +12,11 @@ function get_version() {
   cat "$(get_project_dir)"/VERSION | sed 's/[\sv]//g'
 }
 
-function makeArchives() {
-  if [ -d ".archives" ]; then
-    rm -rf .archives
-  fi
-  
-  mkdir .archives
+function deletePreviousArtifacts() {
+  find . -type f -name 'CWasm3*.xcframework' -exec rm {} +
+  find . -type f -name 'CWasm3*.xcframework.zip' -exec rm {} +
+  find . -type f -name 'CWasm3*.xcframework.zip.checksum' -exec rm {} +
+  rm -rf .archives
 }
 
 function buildFramework() {
@@ -49,7 +48,11 @@ function zipXCFramework() {
   ditto -c -k --sequesterRsrc --keepParent CWasm3.xcframework "$1"
 }
 
-function printChecksum() {
+function createChecksum() {
+  CHECKSUM=`swift package compute-checksum $1`
+  
+  echo "$CHECKSUM" > "$1.checksum"
+  
   echo ""
   echo "🔒 $(swift package compute-checksum $1)"
 }
@@ -64,8 +67,9 @@ fi
 PROJECT_DIR="$(get_project_dir)"
 pushd "$PROJECT_DIR" &>/dev/null
 
-rm *.xcframework.zip
-makeArchives
+deletePreviousArtifacts
+mkdir .archives
+
 buildFramework "generic/platform=iOS" ".archives/CWasm3-iOS"
 buildFramework "generic/platform=iOS Simulator" ".archives/CWasm3-iOS-Simulator"
 buildFramework "generic/platform=macOS,variant=Mac Catalyst" ".archives/CWasm3-macOS-Catalyst"
@@ -73,7 +77,7 @@ buildFramework "generic/platform=macOS" ".archives/CWasm3-macOS"
 createXCFramework $PROJECT_DIR
 ZIP_NAME="CWasm3-$VERSION.xcframework.zip"
 zipXCFramework $ZIP_NAME
-printChecksum $ZIP_NAME
+createChecksum $ZIP_NAME
 rm -rf CWasm3.xcframework
 
 popd &>/dev/null
