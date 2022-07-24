@@ -1,6 +1,9 @@
 # CWasm3
 
+.archives
 .wasm3
+*.xcframework
+*.xcframework.zip
 
 # from https://github.com/github/gitignore/blob/master/Swift.gitignore
 

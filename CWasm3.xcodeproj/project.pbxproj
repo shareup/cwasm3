@@ -1,0 +1,363 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		575C6411288DBA18004FD7DC /* wasm3_ext.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_44 /* wasm3_ext.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6412288DBA18004FD7DC /* m3_emit.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_48 /* m3_emit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6413288DBA18004FD7DC /* m3_config.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* m3_config.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6414288DBA18004FD7DC /* m3_math_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_39 /* m3_math_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6415288DBA18004FD7DC /* wasm3_additions.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* wasm3_additions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6416288DBA18004FD7DC /* m3_exec_defs.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_34 /* m3_exec_defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6417288DBA18004FD7DC /* m3_env.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_45 /* m3_env.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6418288DBA18004FD7DC /* m3_bind.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_47 /* m3_bind.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6419288DBA18004FD7DC /* m3_info.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_49 /* m3_info.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C641A288DBA18004FD7DC /* m3_config_platforms.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_37 /* m3_config_platforms.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C641B288DBA18004FD7DC /* m3_api_wasi.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* m3_api_wasi.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C641C288DBA18004FD7DC /* wasm3_defs.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_41 /* wasm3_defs.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C641D288DBA18004FD7DC /* wasm3.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_36 /* wasm3.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C641E288DBA18004FD7DC /* m3_function.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_35 /* m3_function.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C641F288DBA18004FD7DC /* m3_exec.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_43 /* m3_exec.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6420288DBA18004FD7DC /* m3_code.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_38 /* m3_code.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6421288DBA18004FD7DC /* m3_exception.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_40 /* m3_exception.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6422288DBA18004FD7DC /* m3_api_libc.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_46 /* m3_api_libc.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6423288DBA18004FD7DC /* m3_core.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* m3_core.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6424288DBA18004FD7DC /* m3_api_tracer.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* m3_api_tracer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		575C6425288DBA18004FD7DC /* m3_compile.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_42 /* m3_compile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		OBJ_69 /* m3_api_libc.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* m3_api_libc.c */; };
+		OBJ_70 /* m3_api_meta_wasi.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* m3_api_meta_wasi.c */; };
+		OBJ_71 /* m3_api_tracer.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* m3_api_tracer.c */; };
+		OBJ_72 /* m3_api_uvwasi.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* m3_api_uvwasi.c */; };
+		OBJ_73 /* m3_api_wasi.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* m3_api_wasi.c */; };
+		OBJ_74 /* m3_bind.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* m3_bind.c */; };
+		OBJ_75 /* m3_code.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* m3_code.c */; };
+		OBJ_76 /* m3_compile.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* m3_compile.c */; };
+		OBJ_77 /* m3_core.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* m3_core.c */; };
+		OBJ_78 /* m3_emit.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* m3_emit.c */; };
+		OBJ_79 /* m3_env.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* m3_env.c */; };
+		OBJ_80 /* m3_exec.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* m3_exec.c */; };
+		OBJ_81 /* m3_extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* m3_extensions.c */; };
+		OBJ_82 /* m3_function.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* m3_function.c */; };
+		OBJ_83 /* m3_info.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* m3_info.c */; };
+		OBJ_84 /* m3_module.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_24 /* m3_module.c */; };
+		OBJ_85 /* m3_optimize.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_25 /* m3_optimize.c */; };
+		OBJ_86 /* m3_parse.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* m3_parse.c */; };
+		OBJ_87 /* wasm3_additions.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* wasm3_additions.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		575C640E288DB817004FD7DC /* cwasm3.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = cwasm3.xcconfig; sourceTree = "<group>"; };
+		575C640F288DB90D004FD7DC /* cwasm3.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = cwasm3.modulemap; sourceTree = "<group>"; };
+		OBJ_10 /* m3_api_meta_wasi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_api_meta_wasi.c; sourceTree = "<group>"; };
+		OBJ_11 /* m3_api_tracer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_api_tracer.c; sourceTree = "<group>"; };
+		OBJ_12 /* m3_api_uvwasi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_api_uvwasi.c; sourceTree = "<group>"; };
+		OBJ_13 /* m3_api_wasi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_api_wasi.c; sourceTree = "<group>"; };
+		OBJ_14 /* m3_bind.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_bind.c; sourceTree = "<group>"; };
+		OBJ_15 /* m3_code.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_code.c; sourceTree = "<group>"; };
+		OBJ_16 /* m3_compile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_compile.c; sourceTree = "<group>"; };
+		OBJ_17 /* m3_core.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_core.c; sourceTree = "<group>"; };
+		OBJ_18 /* m3_emit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_emit.c; sourceTree = "<group>"; };
+		OBJ_19 /* m3_env.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_env.c; sourceTree = "<group>"; };
+		OBJ_20 /* m3_exec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_exec.c; sourceTree = "<group>"; };
+		OBJ_21 /* m3_extensions.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_extensions.c; sourceTree = "<group>"; };
+		OBJ_22 /* m3_function.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_function.c; sourceTree = "<group>"; };
+		OBJ_23 /* m3_info.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_info.c; sourceTree = "<group>"; };
+		OBJ_24 /* m3_module.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_module.c; sourceTree = "<group>"; };
+		OBJ_25 /* m3_optimize.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_optimize.c; sourceTree = "<group>"; };
+		OBJ_26 /* m3_parse.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_parse.c; sourceTree = "<group>"; };
+		OBJ_27 /* wasm3_additions.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = wasm3_additions.c; sourceTree = "<group>"; };
+		OBJ_29 /* m3_api_wasi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_api_wasi.h; sourceTree = "<group>"; };
+		OBJ_30 /* wasm3_additions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wasm3_additions.h; sourceTree = "<group>"; };
+		OBJ_31 /* m3_core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_core.h; sourceTree = "<group>"; };
+		OBJ_32 /* m3_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_config.h; sourceTree = "<group>"; };
+		OBJ_33 /* m3_api_tracer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_api_tracer.h; sourceTree = "<group>"; };
+		OBJ_34 /* m3_exec_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_exec_defs.h; sourceTree = "<group>"; };
+		OBJ_35 /* m3_function.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_function.h; sourceTree = "<group>"; };
+		OBJ_36 /* wasm3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wasm3.h; sourceTree = "<group>"; };
+		OBJ_37 /* m3_config_platforms.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_config_platforms.h; sourceTree = "<group>"; };
+		OBJ_38 /* m3_code.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_code.h; sourceTree = "<group>"; };
+		OBJ_39 /* m3_math_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_math_utils.h; sourceTree = "<group>"; };
+		OBJ_40 /* m3_exception.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_exception.h; sourceTree = "<group>"; };
+		OBJ_41 /* wasm3_defs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wasm3_defs.h; sourceTree = "<group>"; };
+		OBJ_42 /* m3_compile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_compile.h; sourceTree = "<group>"; };
+		OBJ_43 /* m3_exec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_exec.h; sourceTree = "<group>"; };
+		OBJ_44 /* wasm3_ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wasm3_ext.h; sourceTree = "<group>"; };
+		OBJ_45 /* m3_env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_env.h; sourceTree = "<group>"; };
+		OBJ_46 /* m3_api_libc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_api_libc.h; sourceTree = "<group>"; };
+		OBJ_47 /* m3_bind.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_bind.h; sourceTree = "<group>"; };
+		OBJ_48 /* m3_emit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_emit.h; sourceTree = "<group>"; };
+		OBJ_49 /* m3_info.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = m3_info.h; sourceTree = "<group>"; };
+		OBJ_59 /* update-wasm3 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "update-wasm3"; sourceTree = "<group>"; };
+		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		OBJ_60 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		OBJ_61 /* WASM3-LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = "WASM3-LICENSE"; sourceTree = "<group>"; };
+		OBJ_62 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		OBJ_63 /* VERSION */ = {isa = PBXFileReference; lastKnownFileType = text; path = VERSION; sourceTree = "<group>"; };
+		OBJ_9 /* m3_api_libc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = m3_api_libc.c; sourceTree = "<group>"; };
+		"cwasm3::CWasm3::Product" /* CWasm3.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CWasm3.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		OBJ_88 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		OBJ_28 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_29 /* m3_api_wasi.h */,
+				OBJ_30 /* wasm3_additions.h */,
+				OBJ_31 /* m3_core.h */,
+				OBJ_32 /* m3_config.h */,
+				OBJ_33 /* m3_api_tracer.h */,
+				OBJ_34 /* m3_exec_defs.h */,
+				OBJ_35 /* m3_function.h */,
+				OBJ_36 /* wasm3.h */,
+				OBJ_37 /* m3_config_platforms.h */,
+				OBJ_38 /* m3_code.h */,
+				OBJ_39 /* m3_math_utils.h */,
+				OBJ_40 /* m3_exception.h */,
+				OBJ_41 /* wasm3_defs.h */,
+				OBJ_42 /* m3_compile.h */,
+				OBJ_43 /* m3_exec.h */,
+				OBJ_44 /* wasm3_ext.h */,
+				OBJ_45 /* m3_env.h */,
+				OBJ_46 /* m3_api_libc.h */,
+				OBJ_47 /* m3_bind.h */,
+				OBJ_48 /* m3_emit.h */,
+				OBJ_49 /* m3_info.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		OBJ_5 /*  */ = {
+			isa = PBXGroup;
+			children = (
+				575C640E288DB817004FD7DC /* cwasm3.xcconfig */,
+				575C640F288DB90D004FD7DC /* cwasm3.modulemap */,
+				OBJ_6 /* Package.swift */,
+				OBJ_7 /* Sources */,
+				OBJ_56 /* Products */,
+				OBJ_59 /* update-wasm3 */,
+				OBJ_60 /* LICENSE */,
+				OBJ_61 /* WASM3-LICENSE */,
+				OBJ_62 /* README.md */,
+				OBJ_63 /* VERSION */,
+			);
+			name = "";
+			sourceTree = "<group>";
+		};
+		OBJ_56 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				"cwasm3::CWasm3::Product" /* CWasm3.framework */,
+			);
+			name = Products;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		OBJ_7 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_8 /* CWasm3 */,
+			);
+			name = Sources;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_8 /* CWasm3 */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_9 /* m3_api_libc.c */,
+				OBJ_10 /* m3_api_meta_wasi.c */,
+				OBJ_11 /* m3_api_tracer.c */,
+				OBJ_12 /* m3_api_uvwasi.c */,
+				OBJ_13 /* m3_api_wasi.c */,
+				OBJ_14 /* m3_bind.c */,
+				OBJ_15 /* m3_code.c */,
+				OBJ_16 /* m3_compile.c */,
+				OBJ_17 /* m3_core.c */,
+				OBJ_18 /* m3_emit.c */,
+				OBJ_19 /* m3_env.c */,
+				OBJ_20 /* m3_exec.c */,
+				OBJ_21 /* m3_extensions.c */,
+				OBJ_22 /* m3_function.c */,
+				OBJ_23 /* m3_info.c */,
+				OBJ_24 /* m3_module.c */,
+				OBJ_25 /* m3_optimize.c */,
+				OBJ_26 /* m3_parse.c */,
+				OBJ_27 /* wasm3_additions.c */,
+				OBJ_28 /* include */,
+			);
+			name = CWasm3;
+			path = Sources/CWasm3;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		575C6410288DBA0F004FD7DC /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				575C6411288DBA18004FD7DC /* wasm3_ext.h in Headers */,
+				575C6415288DBA18004FD7DC /* wasm3_additions.h in Headers */,
+				575C641C288DBA18004FD7DC /* wasm3_defs.h in Headers */,
+				575C6413288DBA18004FD7DC /* m3_config.h in Headers */,
+				575C6418288DBA18004FD7DC /* m3_bind.h in Headers */,
+				575C6416288DBA18004FD7DC /* m3_exec_defs.h in Headers */,
+				575C6414288DBA18004FD7DC /* m3_math_utils.h in Headers */,
+				575C6421288DBA18004FD7DC /* m3_exception.h in Headers */,
+				575C6425288DBA18004FD7DC /* m3_compile.h in Headers */,
+				575C6412288DBA18004FD7DC /* m3_emit.h in Headers */,
+				575C641E288DBA18004FD7DC /* m3_function.h in Headers */,
+				575C6420288DBA18004FD7DC /* m3_code.h in Headers */,
+				575C641B288DBA18004FD7DC /* m3_api_wasi.h in Headers */,
+				575C6419288DBA18004FD7DC /* m3_info.h in Headers */,
+				575C6417288DBA18004FD7DC /* m3_env.h in Headers */,
+				575C641A288DBA18004FD7DC /* m3_config_platforms.h in Headers */,
+				575C6422288DBA18004FD7DC /* m3_api_libc.h in Headers */,
+				575C641F288DBA18004FD7DC /* m3_exec.h in Headers */,
+				575C641D288DBA18004FD7DC /* wasm3.h in Headers */,
+				575C6424288DBA18004FD7DC /* m3_api_tracer.h in Headers */,
+				575C6423288DBA18004FD7DC /* m3_core.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		"cwasm3::CWasm3" /* CWasm3 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_65 /* Build configuration list for PBXNativeTarget "CWasm3" */;
+			buildPhases = (
+				575C6410288DBA0F004FD7DC /* Headers */,
+				OBJ_68 /* Sources */,
+				OBJ_88 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CWasm3;
+			productName = CWasm3;
+			productReference = "cwasm3::CWasm3::Product" /* CWasm3.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		OBJ_1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftMigration = 9999;
+				LastUpgradeCheck = 9999;
+			};
+			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "CWasm3" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = OBJ_5 /*  */;
+			productRefGroup = OBJ_56 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				"cwasm3::CWasm3" /* CWasm3 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		OBJ_68 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_69 /* m3_api_libc.c in Sources */,
+				OBJ_70 /* m3_api_meta_wasi.c in Sources */,
+				OBJ_71 /* m3_api_tracer.c in Sources */,
+				OBJ_72 /* m3_api_uvwasi.c in Sources */,
+				OBJ_73 /* m3_api_wasi.c in Sources */,
+				OBJ_74 /* m3_bind.c in Sources */,
+				OBJ_75 /* m3_code.c in Sources */,
+				OBJ_76 /* m3_compile.c in Sources */,
+				OBJ_77 /* m3_core.c in Sources */,
+				OBJ_78 /* m3_emit.c in Sources */,
+				OBJ_79 /* m3_env.c in Sources */,
+				OBJ_80 /* m3_exec.c in Sources */,
+				OBJ_81 /* m3_extensions.c in Sources */,
+				OBJ_82 /* m3_function.c in Sources */,
+				OBJ_83 /* m3_info.c in Sources */,
+				OBJ_84 /* m3_module.c in Sources */,
+				OBJ_85 /* m3_optimize.c in Sources */,
+				OBJ_86 /* m3_parse.c in Sources */,
+				OBJ_87 /* wasm3_additions.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		OBJ_3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 575C640E288DB817004FD7DC /* cwasm3.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		OBJ_4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 575C640E288DB817004FD7DC /* cwasm3.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		OBJ_66 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 575C640E288DB817004FD7DC /* cwasm3.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		OBJ_67 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 575C640E288DB817004FD7DC /* cwasm3.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		OBJ_2 /* Build configuration list for PBXProject "CWasm3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_3 /* Debug */,
+				OBJ_4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_65 /* Build configuration list for PBXNativeTarget "CWasm3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_66 /* Debug */,
+				OBJ_67 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = OBJ_1 /* Project object */;
+}
