@@ -34,14 +34,14 @@ function createXCFramework() {
   xcodebuild \
     -create-xcframework \
     -framework ".archives/CWasm3-iOS.xcarchive/Products/Library/Frameworks/CWasm3.framework" \
-    -debug-symbols "/Users/atdrendel/shareup/cwasm3/.archives/CWasm3-iOS.xcarchive/BCSymbolMaps/9EDFC8DD-15A8-39FB-B396-190B0F458495.bcsymbolmap" \
-    -debug-symbols "/Users/atdrendel/shareup/cwasm3/.archives/CWasm3-iOS.xcarchive/dSYMs/CWasm3.framework.dSYM" \
+    -debug-symbols "$1/.archives/CWasm3-iOS.xcarchive/BCSymbolMaps/9EDFC8DD-15A8-39FB-B396-190B0F458495.bcsymbolmap" \
+    -debug-symbols "$1/.archives/CWasm3-iOS.xcarchive/dSYMs/CWasm3.framework.dSYM" \
     -framework ".archives/CWasm3-iOS-Simulator.xcarchive/Products/Library/Frameworks/CWasm3.framework" \
-    -debug-symbols "/Users/atdrendel/shareup/cwasm3/.archives/CWasm3-iOS-Simulator.xcarchive/dSYMs/CWasm3.framework.dSYM" \
+    -debug-symbols "$1/.archives/CWasm3-iOS-Simulator.xcarchive/dSYMs/CWasm3.framework.dSYM" \
     -framework ".archives/CWasm3-macOS-Catalyst.xcarchive/Products/Library/Frameworks/CWasm3.framework" \
-    -debug-symbols "/Users/atdrendel/shareup/cwasm3/.archives/CWasm3-macOS-Catalyst.xcarchive/dSYMs/CWasm3.framework.dSYM" \
+    -debug-symbols "$1/.archives/CWasm3-macOS-Catalyst.xcarchive/dSYMs/CWasm3.framework.dSYM" \
     -framework ".archives/CWasm3-macOS.xcarchive/Products/Library/Frameworks/CWasm3.framework" \
-    -debug-symbols "/Users/atdrendel/shareup/cwasm3/.archives/CWasm3-macOS.xcarchive/dSYMs/CWasm3.framework.dSYM" \
+    -debug-symbols "$1/.archives/CWasm3-macOS.xcarchive/dSYMs/CWasm3.framework.dSYM" \
     -output CWasm3.xcframework
 }
 
@@ -61,7 +61,8 @@ if [ -z "$VERSION" ]; then
     exit -1
 fi
 
-pushd "$(get_project_dir)" &>/dev/null
+PROJECT_DIR="$(get_project_dir)"
+pushd "$PROJECT_DIR" &>/dev/null
 
 rm *.xcframework.zip
 makeArchives
@@ -69,7 +70,7 @@ buildFramework "generic/platform=iOS" ".archives/CWasm3-iOS"
 buildFramework "generic/platform=iOS Simulator" ".archives/CWasm3-iOS-Simulator"
 buildFramework "generic/platform=macOS,variant=Mac Catalyst" ".archives/CWasm3-macOS-Catalyst"
 buildFramework "generic/platform=macOS" ".archives/CWasm3-macOS"
-createXCFramework
+createXCFramework $PROJECT_DIR
 ZIP_NAME="CWasm3-$VERSION.xcframework.zip"
 zipXCFramework $ZIP_NAME
 printChecksum $ZIP_NAME
