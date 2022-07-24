@@ -1,5 +1,5 @@
-import XCTest
 @testable import CWasm3
+import XCTest
 
 final class CWasm3Tests: XCTestCase {
     func testCanCreateEnvironmentAndRuntime() throws {
@@ -23,7 +23,12 @@ final class CWasm3Tests: XCTestCase {
         defer { constantBytes.removeAll() }
 
         var module: IM3Module?
-        XCTAssertNil(m3_ParseModule(environment, &module, constantBytes, UInt32(constantBytes.count)))
+        XCTAssertNil(m3_ParseModule(
+            environment,
+            &module,
+            constantBytes,
+            UInt32(constantBytes.count)
+        ))
         XCTAssertNil(m3_LoadModule(runtime, module))
 
         var constant1Function: IM3Function?
@@ -61,7 +66,7 @@ final class CWasm3Tests: XCTestCase {
         XCTAssertEqual("function lookup failed", String(cString: err))
 
         [constant1Function, constant2Function, constant3Function]
-            .forEach { (function) in
+            .forEach { function in
                 guard function != nil else { return XCTFail() }
                 let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
                 let output = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
@@ -91,7 +96,7 @@ final class CWasm3Tests: XCTestCase {
         var addFunction: IM3Function?
         XCTAssertNil(m3_FindFunction(&addFunction, runtime, "add"))
 
-        let result = ["3", "12345"].withCStrings { (args) -> Int32 in
+        let result = ["3", "12345"].withCStrings { args -> Int32 in
             let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
             let output = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
             XCTAssertNil(wasm3_CallWithArgs(addFunction, UInt32(2), args, size, output))
@@ -113,13 +118,18 @@ final class CWasm3Tests: XCTestCase {
         defer { fibonacciBytes.removeAll() }
 
         var module: IM3Module?
-        XCTAssertNil(m3_ParseModule(environment, &module, fibonacciBytes, UInt32(fibonacciBytes.count)))
+        XCTAssertNil(m3_ParseModule(
+            environment,
+            &module,
+            fibonacciBytes,
+            UInt32(fibonacciBytes.count)
+        ))
         XCTAssertNil(m3_LoadModule(runtime, module))
 
         var fibonacciFunction: IM3Function?
         XCTAssertNil(m3_FindFunction(&fibonacciFunction, runtime, "fib"))
 
-        let result = ["25"].withCStrings { (args) -> Int64 in
+        let result = ["25"].withCStrings { args -> Int64 in
             let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
             let output = UnsafeMutablePointer<Int64>.allocate(capacity: 1)
             XCTAssertNil(wasm3_CallWithArgs(fibonacciFunction, UInt32(1), args, size, output))
@@ -141,7 +151,12 @@ final class CWasm3Tests: XCTestCase {
         defer { importedAddBytes.removeAll() }
 
         var module: IM3Module?
-        XCTAssertNil(m3_ParseModule(environment, &module, importedAddBytes, UInt32(importedAddBytes.count)))
+        XCTAssertNil(m3_ParseModule(
+            environment,
+            &module,
+            importedAddBytes,
+            UInt32(importedAddBytes.count)
+        ))
         XCTAssertNil(m3_LoadModule(runtime, module))
 
         // The imported function needs to linked before the exported function can be referenced.
@@ -150,7 +165,11 @@ final class CWasm3Tests: XCTestCase {
         ))
 
         var integerProviderFunction: IM3Function?
-        XCTAssertNil(m3_FindFunction(&integerProviderFunction, runtime, "integer_provider_func"))
+        XCTAssertNil(m3_FindFunction(
+            &integerProviderFunction,
+            runtime,
+            "integer_provider_func"
+        ))
 
         let size = UnsafeMutablePointer<Int>.allocate(capacity: 1)
         defer { size.deallocate() }
@@ -188,7 +207,7 @@ final class CWasm3Tests: XCTestCase {
 
         XCTAssertNil(wasm3_CallWithArgs(writeUTF8Function, UInt32(0), nil, nil, nil))
 
-        var heapBytes: Int = 0
+        var heapBytes = 0
         let heapString = try runtime.stringFromHeap(
             offset: 0,
             length: 13, // defined in memory.wasm
@@ -228,27 +247,37 @@ final class CWasm3Tests: XCTestCase {
         let beforeModification = try runtime.stringFromHeap(offset: 0, length: 13)
         XCTAssertEqual("DDDDDDDDDDDDD", beforeModification)
 
-        let afterModification = try ["4"].withCStrings { (args) throws -> String in
+        let afterModification = try ["4"].withCStrings { args throws -> String in
             XCTAssertNil(wasm3_CallWithArgs(modifyUTF8Function, UInt32(1), args, nil, nil))
-            return try runtime.stringFromHeap(offset: 0, length: 13) // length defined in memory.wasm
+            return try runtime
+                .stringFromHeap(offset: 0, length: 13) // length defined in memory.wasm
         }
         XCTAssertEqual("DDDDEDDDDDDDD", afterModification)
     }
 
     static var allTests = [
         ("testCanCreateEnvironmentAndRuntime", testCanCreateEnvironmentAndRuntime),
-        ("testCanCallFunctionsWithSameImplementations", testCanCallFunctionsWithSameImplementations),
+        (
+            "testCanCallFunctionsWithSameImplementations",
+            testCanCallFunctionsWithSameImplementations
+        ),
         ("testCanCallAndReceiveReturnValueFromAdd", testCanCallAndReceiveReturnValueFromAdd),
-        ("testCanCallAndReceiveReturnValueFromFibonacci", testCanCallAndReceiveReturnValueFromFibonacci),
+        (
+            "testCanCallAndReceiveReturnValueFromFibonacci",
+            testCanCallAndReceiveReturnValueFromFibonacci
+        ),
         ("testImportingNativeFunction", testImportingNativeFunction),
-        ("testModifyingHeapMemoryInsideImportedFunction", testModifyingHeapMemoryInsideImportedFunction),
+        (
+            "testModifyingHeapMemoryInsideImportedFunction",
+            testModifyingHeapMemoryInsideImportedFunction
+        ),
         ("testModifyHeapMemoryInsideOfWasmFunction", testModifyHeapMemoryInsideOfWasmFunction),
     ]
 }
 
 private func importedWrite(
-    runtime: IM3Runtime?,
-    context: IM3ImportContext?,
+    runtime _: IM3Runtime?,
+    context _: IM3ImportContext?,
     stackPointer: UnsafeMutablePointer<UInt64>?,
     memory: UnsafeMutableRawPointer?
 ) -> UnsafeRawPointer? {
@@ -263,16 +292,20 @@ private func importedWrite(
 
     memory
         .advanced(by: Int(offset))
-        .initializeMemory(as: CChar.self, repeating: CChar(bitPattern: 0x0044), count: Int(length))
+        .initializeMemory(
+            as: CChar.self,
+            repeating: CChar(bitPattern: 0x0044),
+            count: Int(length)
+        )
 
     return nil
 }
 
 private func importedAdd(
-    runtime: IM3Runtime?,
-    context: IM3ImportContext?,
+    runtime _: IM3Runtime?,
+    context _: IM3ImportContext?,
     stackPointer: UnsafeMutablePointer<UInt64>?,
-    memory: UnsafeMutableRawPointer?
+    memory _: UnsafeMutableRawPointer?
 ) -> UnsafeRawPointer? {
     guard let stackPointer = UnsafeMutableRawPointer(stackPointer) else {
         return UnsafeRawPointer(m3Err_trapUnreachable)
@@ -293,7 +326,11 @@ private func importedAdd(
 }
 
 private extension Optional where Wrapped == IM3Runtime {
-    func stringFromHeap(offset: Int, length: Int, totalHeapBytes: UnsafeMutablePointer<Int>? = nil) throws -> String {
+    func stringFromHeap(
+        offset: Int,
+        length: Int,
+        totalHeapBytes: UnsafeMutablePointer<Int>? = nil
+    ) throws -> String {
         let heapBytes = UnsafeMutablePointer<UInt32>.allocate(capacity: 1)
         defer { heapBytes.deallocate() }
 
@@ -317,38 +354,42 @@ extension CWasm3Tests {
         case couldNotLoadResource(String)
     }
 
-    private func addWasm() throws -> Array<UInt8> {
+    private func addWasm() throws -> [UInt8] {
         let base64 = "AGFzbQEAAAABBwFgAn9/AX8DAgEABwcBA2FkZAAACgkBBwAgACABags="
-        guard let data = Data(base64Encoded: base64) else { throw TestError.couldNotDecodeWasm("add.wasm") }
-        return Array<UInt8>(data)
+        guard let data = Data(base64Encoded: base64)
+        else { throw TestError.couldNotDecodeWasm("add.wasm") }
+        return [UInt8](data)
     }
 
-    private func constantWasm() throws -> Array<UInt8> {
+    private func constantWasm() throws -> [UInt8] {
         let base64 =
             "AGFzbQEAAAABBQFgAAF/AwIBAAeSAQsKY29uc3RhbnRfMQAACmNvbnN0YW50XzIAAApjb25zdGFudF8zAAAKY29uc3RhbnRfNAAACmNvbnN0YW50XzUAAApjb25zdGFudF82AAAKY29uc3RhbnRfNwAACmNvbnN0YW50XzgAAApjb25zdGFudF85AAALY29uc3RhbnRfMTAAAAtjb25zdGFudF8xMQAACggBBgBBgIAECw=="
         guard let data = Data(base64Encoded: base64)
         else { throw TestError.couldNotDecodeWasm("constant.wasm") }
-        return Array<UInt8>(data)
+        return [UInt8](data)
     }
 
-    private func fibonacciWasm() throws -> Array<UInt8> {
-        let base64 = "AGFzbQEAAAABBgFgAX4BfgMCAQAHBwEDZmliAAAKHwEdACAAQgJUBEAgAA8LIABCAn0QACAAQgF9EAB8Dws="
+    private func fibonacciWasm() throws -> [UInt8] {
+        let base64 =
+            "AGFzbQEAAAABBgFgAX4BfgMCAQAHBwEDZmliAAAKHwEdACAAQgJUBEAgAA8LIABCAn0QACAAQgF9EAB8Dws="
         guard let data = Data(base64Encoded: base64)
         else { throw TestError.couldNotDecodeWasm("fib64.wasm") }
-        return Array<UInt8>(data)
+        return [UInt8](data)
     }
 
-    private func importedAddWasm() throws -> Array<UInt8> {
-        let base64 = "AGFzbQEAAAABCwJgAn9+AX9gAAF/Ah0BB2ltcG9ydHMRaW1wb3J0ZWRfYWRkX2Z1bmMAAAMCAQEHGQEVaW50ZWdlcl9wcm92aWRlcl9mdW5jAAEKCwEJAEH7ZUIqEAAL"
+    private func importedAddWasm() throws -> [UInt8] {
+        let base64 =
+            "AGFzbQEAAAABCwJgAn9+AX9gAAF/Ah0BB2ltcG9ydHMRaW1wb3J0ZWRfYWRkX2Z1bmMAAAMCAQEHGQEVaW50ZWdlcl9wcm92aWRlcl9mdW5jAAEKCwEJAEH7ZUIqEAAL"
         guard let data = Data(base64Encoded: base64)
         else { throw TestError.couldNotDecodeWasm("imported-add.wasm") }
-        return Array<UInt8>(data)
+        return [UInt8](data)
     }
 
-    private func memoryWasm() throws -> Array<UInt8> {
-        let base64 = "AGFzbQEAAAABDQNgAn9/AGAAAGABfwACEAEGbmF0aXZlBXdyaXRlAAADAwIBAgUDAQABBxwCCndyaXRlX3V0ZjgAAQttb2RpZnlfdXRmOAACChoCCABBAEENEAALDwAgACAAKAIAQQFqNgIACw=="
+    private func memoryWasm() throws -> [UInt8] {
+        let base64 =
+            "AGFzbQEAAAABDQNgAn9/AGAAAGABfwACEAEGbmF0aXZlBXdyaXRlAAADAwIBAgUDAQABBxwCCndyaXRlX3V0ZjgAAQttb2RpZnlfdXRmOAACChoCCABBAEENEAALDwAgACAAKAIAQQFqNgIACw=="
         guard let data = Data(base64Encoded: base64)
         else { throw TestError.couldNotDecodeWasm("memory.wasm") }
-        return Array<UInt8>(data)
+        return [UInt8](data)
     }
 }

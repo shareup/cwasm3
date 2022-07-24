@@ -1,4 +1,4 @@
-framework module CWasm3 {
+framework module CWasm3 [system] {
     requires c11
 
     header "m3_api_libc.h"

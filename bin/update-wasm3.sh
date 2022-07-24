@@ -1,5 +1,11 @@
 #! /usr/bin/env bash
 
+function get_project_dir() {
+  SELF=`realpath $0`
+  DIR=`dirname $SELF`
+  echo ${DIR%/*}
+}
+
 function get_local_tag() {
   cat VERSION 2>/dev/null | tr -d '[:space:]'
 }
@@ -30,6 +36,8 @@ function replace_wasm3_with_branch() {
   popd >/dev/null
 }
 
+pushd "$(get_project_dir)" &>/dev/null
+
 if [ -z "$1" ]; then
   REMOTE_TAG=$(get_remote_tag)
   LOCAL_TAG=$(get_local_tag)
@@ -53,3 +61,5 @@ else
 
   echo "Updated to $1"
 fi
+
+popd &>/dev/null
