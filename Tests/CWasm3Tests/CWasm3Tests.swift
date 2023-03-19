@@ -72,7 +72,7 @@ final class CWasm3Tests: XCTestCase {
                 let output = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
 
                 XCTAssertNil(wasm3_CallWithArgs(function, 0, [], size, output))
-                XCTAssertEqual(65536, output.pointee)
+                XCTAssertEqual(65_536, output.pointee)
 
                 size.deallocate()
                 output.deallocate()
@@ -104,7 +104,7 @@ final class CWasm3Tests: XCTestCase {
             return output.pointee
         }
 
-        XCTAssertEqual(12348, result)
+        XCTAssertEqual(12_348, result)
     }
 
     func testCanCallAndReceiveReturnValueFromFibonacci() throws {
@@ -137,7 +137,7 @@ final class CWasm3Tests: XCTestCase {
             return output.pointee
         }
 
-        XCTAssertEqual(75025, result)
+        XCTAssertEqual(75_025, result)
     }
 
     func testImportingNativeFunction() throws {
@@ -214,7 +214,7 @@ final class CWasm3Tests: XCTestCase {
             totalHeapBytes: &heapBytes
         )
 
-        XCTAssertEqual(65536, heapBytes) // minimum heap size defined in memory.wasm
+        XCTAssertEqual(65_536, heapBytes) // minimum heap size defined in memory.wasm
         XCTAssertEqual("DDDDDDDDDDDDD", heapString)
     }
 
